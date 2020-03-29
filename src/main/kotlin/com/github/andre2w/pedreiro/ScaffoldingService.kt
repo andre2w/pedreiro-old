@@ -1,8 +1,12 @@
 package com.github.andre2w.pedreiro
 
-class ScaffoldingService(fileSystemHandler: FileSystemHandler) {
+class ScaffoldingService(
+    private val fileSystemHandler: FileSystemHandler,
+    private val environment: Environment
+) {
     fun executeTasks(tasks: List<CreateFolder>) {
-        TODO("Not yet implemented")
+        tasks.forEach{ task ->
+            fileSystemHandler.createFolder("${environment.currentDir()}/${task.path}")
+        }
     }
-
 }

@@ -10,6 +10,11 @@ repositories {
     jcenter()
 }
 
+configurations {
+    acceptanceTestCompile.extendsFrom testCompile
+    acceptanceTestRuntime.extendsFrom testRuntime
+}
+
 sourceSets {
     acceptanceTest {
         kotlin {
@@ -24,7 +29,6 @@ sourceSets {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     runtimeOnly "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation "org.snakeyaml:snakeyaml-engine:2.1"
     implementation "org.yaml:snakeyaml:1.26"
 
     testImplementation "org.junit.jupiter:junit-jupiter:5.6.1"
@@ -32,6 +36,7 @@ dependencies {
     testRuntimeOnly "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testImplementation "org.assertj:assertj-core:3.11.1"
 
+    acceptanceTestRuntime "org.yaml:snakeyaml:1.26"
     acceptanceTestImplementation "org.spekframework.spek2:spek-dsl-jvm:$spek_version"
     acceptanceTestImplementation "org.spekframework.spek2:spek-runner-junit5:$spek_version"
     acceptanceTestImplementation "org.assertj:assertj-core:3.11.1"
@@ -39,10 +44,6 @@ dependencies {
 
 }
 
-configurations {
-    acceptanceTestCompile.extendsFrom testCompile
-    acceptanceTestRuntime.extendsFrom testRuntime
-}
 
 task acceptanceTest(type: Test) {
     testClassesDirs = sourceSets.acceptanceTest.output.classesDirs
