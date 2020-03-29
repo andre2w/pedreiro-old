@@ -1,7 +1,6 @@
 package com.github.andre2w.pedreiro
 
 import org.yaml.snakeyaml.Yaml
-import org.yaml.snakeyaml.nodes.Node
 
 class TemplateService(
     private val configuration: PedreiroConfiguration,
@@ -10,35 +9,34 @@ class TemplateService(
     fun loadTemplate(templateName: String) : List<CreateFolder> {
         val template = fileSystemHandler.readFile("${configuration.templatesFolder}/${templateName}.yml")
         val yaml = Yaml()
-        val yamlTemplate = yaml.load<List<Map<String,Any>>>(template)
+        val yamlTemplate = yaml.load<Any>(template)
 
-        val tasks = parseTemplate(yamlTemplate)
-
-        return tasks
+        return parseTemplate(yamlTemplate)
     }
 
-    private fun parseTemplate(yamlTemplate: List<Map<String, Any>>): ArrayList<CreateFolder> {
-        val tasks = ArrayList<CreateFolder>()
+    private fun parseTemplate(yaml: Any) : List<CreateFolder> {
+        val result = ArrayList<CreateFolder>()
 
-        for (entry in yamlTemplate) {
-            tasks.addAll(parseEntry(entry, ""))
+
+        when (yaml) {
+            is List<*> -> (yaml as List<Any>).forEach { item -> result.addAll(parseTemplate(item)) }
+            is Map<*, *> -> result.addAll(parseEntry(yaml as Map<String, Any>, ""))
+            else -> println(yaml)
         }
-        return tasks
+
+        return result
     }
 
     private fun parseEntry(entry: Map<String, Any>, level: String): List<CreateFolder> {
 
         val result = ArrayList<CreateFolder>()
 
-        val path = if (level.isEmpty())
-            entry["name"].toString()
-        else
-            level + "/" + entry["name"]
+        val path = if (level.isEmpty()) entry["name"].toString() else level + "/" + entry["name"]
 
         result.add( CreateFolder(path) )
 
-        if (entry.containsKey("children") && entry["children"] != null) {
-            for (child in entry["children"] as List<Map<String,Any>>) {
+        entry["children"]?.let { children ->
+            (children as List<Map<String,Any>>).forEach { child ->
                 result.addAll( parseEntry(child, path) )
             }
         }
