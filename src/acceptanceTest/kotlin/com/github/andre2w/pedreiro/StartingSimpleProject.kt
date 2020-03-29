@@ -9,32 +9,25 @@ import org.spekframework.spek2.style.specification.describe
 object StartingSimpleProject : Spek({
 
     describe("The Pedreiro cli") {
-        val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
-        val environment = mockk<Environment>()
-        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment)
-        val configuration = PedreiroConfiguration("/home/user/.pedreiro")
-        val templateService = TemplateService(configuration, fileSystemHandler)
-        val argumentParser = ArgumentParser()
-
         val baseDir = "/home/user/projects"
         val templateName = "baseGradle"
 
-        every { environment.currentDir() } returns baseDir
-        every { fileSystemHandler.readFile("/home/user/.pedreiro/${templateName}.yml") } returns Fixtures.simpleTemplate
+        val (fileSystemHandler, environment, pedreiro) = createPedreiroInstance()
 
-        val pedreiro = Pedreiro(scaffoldingService, templateService, argumentParser)
+        describe("creating project from a simple template with only folders and files") {
+            every { environment.currentDir() } returns baseDir
+            every { fileSystemHandler.readFile("/home/user/.pedreiro/${templateName}.yml") } returns Fixtures.simpleTemplate
 
-        describe("when called with a template name as an argument") {
             pedreiro.execute(arrayOf(templateName))
 
-            it("should create the file structure declared in the template") {
-                val fileContent = """
+            val fileContent = """
                 plugins {
                     id 'org.jetbrains.kotlin.jvm' version '1.3.71'
 	            }
 	
 	            group 'org.example'
 	            version '1.0-SNAPSHOT'""".trimIndent()
+            it("should create the file structure declared in the template") {
 
                 verify {
                     fileSystemHandler.createFolder("${baseDir}/test/src/main/kotlin")
@@ -45,3 +38,14 @@ object StartingSimpleProject : Spek({
         }
     }
 })
+
+private fun createPedreiroInstance(): Triple<FileSystemHandler, Environment, Pedreiro> {
+    val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
+    val environment = mockk<Environment>()
+    val scaffoldingService = ScaffoldingService(fileSystemHandler, environment)
+    val configuration = PedreiroConfiguration("/home/user/.pedreiro")
+    val templateService = TemplateService(configuration, fileSystemHandler)
+    val argumentParser = ArgumentParser()
+    val pedreiro = Pedreiro(scaffoldingService, templateService, argumentParser)
+    return Triple(fileSystemHandler, environment, pedreiro)
+}
