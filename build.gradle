@@ -36,6 +36,7 @@ dependencies {
     acceptanceTestImplementation "org.spekframework.spek2:spek-runner-junit5:$spek_version"
     acceptanceTestImplementation "org.assertj:assertj-core:3.11.1"
     acceptanceTestImplementation "io.mockk:mockk:1.9.3.kotlin12"
+
 }
 
 configurations {
@@ -60,10 +61,13 @@ compileTestKotlin {
 }
 
 test {
-    useJUnitPlatform {
-        includeEngines 'spek2'
-    }
+    useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
+    }
+}
+acceptanceTest {
+    useJUnitPlatform {
+        includeEngines 'spek2'
     }
 }
