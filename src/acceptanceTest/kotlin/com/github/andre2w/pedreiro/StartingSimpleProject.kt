@@ -10,7 +10,8 @@ object StartingSimpleProject : Spek({
     describe("The Pedreiro cli") {
         val fileSystemHandler = mockk<FileSystemHandler>()
         val scaffoldingService = ScaffoldingService(fileSystemHandler)
-        val templateService = TemplateService()
+        val configuration = PedreiroConfiguration("/home/user/.pedreiro")
+        val templateService = TemplateService(configuration, fileSystemHandler)
         val argumentParser = ArgumentParser()
         val pedreiro = Pedreiro(scaffoldingService, templateService, argumentParser)
 

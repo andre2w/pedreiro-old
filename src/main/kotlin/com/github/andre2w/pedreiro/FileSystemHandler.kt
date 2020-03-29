@@ -9,4 +9,8 @@ class FileSystemHandler {
         TODO("Not yet implemented")
     }
 
+    fun readFile(filepath: String) : String {
+        TODO("Not yet implemented")
+    }
+
 }

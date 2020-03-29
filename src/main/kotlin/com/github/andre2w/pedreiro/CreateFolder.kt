@@ -1,5 +1,5 @@
 package com.github.andre2w.pedreiro
 
-class CreateFolder(path: String) {
+data class CreateFolder(val path: String) {
 
 }
