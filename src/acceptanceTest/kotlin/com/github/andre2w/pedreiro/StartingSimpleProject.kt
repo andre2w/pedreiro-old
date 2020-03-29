@@ -2,7 +2,6 @@ package com.github.andre2w.pedreiro
 
 import io.mockk.mockk
 import io.mockk.verify
-import io.mockk.verifyOrder
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -10,7 +9,10 @@ object StartingSimpleProject : Spek({
 
     describe("The Pedreiro cli") {
         val fileSystemHandler = mockk<FileSystemHandler>()
-        val pedreiro = Pedreiro(fileSystemHandler)
+        val scaffoldingService = ScaffoldingService(fileSystemHandler)
+        val templateService = TemplateService()
+        val argumentParser = ArgumentParser()
+        val pedreiro = Pedreiro(scaffoldingService, templateService, argumentParser)
 
         describe("when called with a template name as an argument") {
             val templateName = "baseGradle"
