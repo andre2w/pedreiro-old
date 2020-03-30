@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class TemplateServiceShould {
 
     @Test
-    fun `parse yaml to list of tasks`() {
+    fun `parse template that only create folders`() {
         val templateName = "templateName"
         val template = """- type: folder
   name: project 
@@ -37,6 +37,32 @@ class TemplateServiceShould {
             CreateFolder("project/src/main"),
             CreateFolder("project/src/main/kotlin"),
             CreateFolder("project/src/main/resources"))
+
+        assertThat(loadedTasks).isEqualTo(tasks)
+    }
+
+    @Test
+    internal fun `parse template that has text files`() {
+        val templateName = "templateName"
+        val template = """- type: folder
+  name: project 
+  children:
+    - type: file
+      name: build.gradle
+      content: dependencies list""".trimIndent()
+
+        val fileSystemHandler = mockk<FileSystemHandler>()
+        val configuration = PedreiroConfiguration("/home/user/.pedreiro")
+        every { fileSystemHandler.readFile("/home/user/.pedreiro/${templateName}.yml") } returns template
+
+        val templateService = TemplateService(configuration, fileSystemHandler)
+
+        val loadedTasks = templateService.loadTemplate(templateName)
+
+        val tasks = listOf(
+            CreateFolder("project"),
+            CreateFile("project/build.gradle", "dependencies list")
+        )
 
         assertThat(loadedTasks).isEqualTo(tasks)
     }

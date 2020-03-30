@@ -27,10 +27,13 @@ class TemplateService(
         return result
     }
 
-    private fun parseEntry(entry: Map<String, Any>, level: String): List<CreateFolder> {
+    private fun parseEntry(entry: Map<String, Any>, level: String): List<Task> {
 
-        val result = ArrayList<CreateFolder>()
+        if (entry["type"] == "file") {
+            return listOf(CreateFile(level + "/" + entry["name"].toString(), entry["content"].toString()))
+        }
 
+        val result = ArrayList<Task>()
         val path = if (level.isEmpty()) entry["name"].toString() else level + "/" + entry["name"]
 
         result.add( CreateFolder(path) )
