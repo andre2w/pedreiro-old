@@ -20,19 +20,12 @@ object StartingSimpleProject : Spek({
 
             pedreiro.execute(arrayOf(templateName))
 
-            val fileContent = """
-                plugins {
-                    id 'org.jetbrains.kotlin.jvm' version '1.3.71'
-	            }
-	
-	            group 'org.example'
-	            version '1.0-SNAPSHOT'""".trimIndent()
             it("should create the file structure declared in the template") {
 
                 verify {
                     fileSystemHandler.createFolder("${baseDir}/test/src/main/kotlin")
                     fileSystemHandler.createFolder("${baseDir}/test/src/main/resources")
-                    fileSystemHandler.createFile("${baseDir}/test/build.gradle", fileContent)
+                    fileSystemHandler.createFile("${baseDir}/build.gradle", Fixtures.build_gradle_content)
                }
             }
         }

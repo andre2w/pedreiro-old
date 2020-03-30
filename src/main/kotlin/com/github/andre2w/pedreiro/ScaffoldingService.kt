@@ -6,7 +6,10 @@ class ScaffoldingService(
 ) {
     fun executeTasks(tasks: List<Task>) {
         tasks.forEach{ task ->
-            fileSystemHandler.createFolder("${environment.currentDir()}/${(task as CreateFolder).path}")
+            when (task) {
+                is CreateFolder -> fileSystemHandler.createFolder("${environment.currentDir()}/${task.path}")
+                is CreateFile -> fileSystemHandler.createFile("${environment.currentDir()}/${task.path}", task.content)
+            }
         }
     }
 }

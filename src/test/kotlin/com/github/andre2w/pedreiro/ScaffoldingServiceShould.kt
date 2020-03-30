@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class ScaffoldingServiceShould {
 
     @Test
-    internal fun `create a folder in current location for CreateFolder task`() {
+    internal fun `create a folder in current location`() {
         val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
         val environment = mockk<Environment>()
         val baseDir = "/home/user/projects"
@@ -24,6 +24,26 @@ class ScaffoldingServiceShould {
         verify {
             fileSystemHandler.createFolder("/home/user/projects/pedreiro")
             fileSystemHandler.createFolder("/home/user/projects/pedreiro/src")
+        }
+    }
+
+    @Test
+    internal fun `create file with contents in the current folder`() {
+        val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
+        val environment = mockk<Environment>()
+        val baseDir = "/home/user/projects"
+        every { environment.currentDir() } returns baseDir
+
+        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment)
+        val tasks = listOf(
+            CreateFolder("pedreiro"),
+            CreateFile("pedreiro/build.gradle", "dependencies")
+        )
+        scaffoldingService.executeTasks(tasks)
+
+        verify {
+            fileSystemHandler.createFolder("/home/user/projects/pedreiro")
+            fileSystemHandler.createFile("/home/user/projects/pedreiro/build.gradle", "dependencies")
         }
     }
 }

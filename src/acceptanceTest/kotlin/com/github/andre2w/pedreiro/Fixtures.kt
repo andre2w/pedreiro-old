@@ -4,6 +4,12 @@ package com.github.andre2w.pedreiro
 class Fixtures {
 
     companion object {
+        val build_gradle_content = """plugins {
+  id 'org.jetbrains.kotlin.jvm' version '1.3.71'
+}
+group 'org.example'
+version '1.0-SNAPSHOT'""".trimIndent()
+
         val simpleTemplate = """---
 - type: folder
   name: test
@@ -24,9 +30,7 @@ class Fixtures {
     plugins {
       id 'org.jetbrains.kotlin.jvm' version '1.3.71'
     }
-
     group 'org.example'
-    version '1.0-SNAPSHOT' 
-          """.trimIndent()
+    version '1.0-SNAPSHOT'""".trimIndent()
     }
 }
