@@ -1,5 +1,5 @@
 package com.github.andre2w.pedreiro
 
-data class CreateFolder(val path: String) {
+interface Task
 
-}
+data class CreateFolder(val path: String) : Task

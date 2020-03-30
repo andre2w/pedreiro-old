@@ -4,9 +4,9 @@ class ScaffoldingService(
     private val fileSystemHandler: FileSystemHandler,
     private val environment: Environment
 ) {
-    fun executeTasks(tasks: List<CreateFolder>) {
+    fun executeTasks(tasks: List<Task>) {
         tasks.forEach{ task ->
-            fileSystemHandler.createFolder("${environment.currentDir()}/${task.path}")
+            fileSystemHandler.createFolder("${environment.currentDir()}/${(task as CreateFolder).path}")
         }
     }
 }

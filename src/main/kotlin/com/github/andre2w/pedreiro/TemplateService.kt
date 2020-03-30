@@ -6,7 +6,7 @@ class TemplateService(
     private val configuration: PedreiroConfiguration,
     private val fileSystemHandler: FileSystemHandler
 ) {
-    fun loadTemplate(templateName: String) : List<CreateFolder> {
+    fun loadTemplate(templateName: String) : List<Task> {
         val template = fileSystemHandler.readFile("${configuration.templatesFolder}/${templateName}.yml")
         val yaml = Yaml()
         val yamlTemplate = yaml.load<Any>(template)
@@ -14,8 +14,8 @@ class TemplateService(
         return parseTemplate(yamlTemplate)
     }
 
-    private fun parseTemplate(yaml: Any) : List<CreateFolder> {
-        val result = ArrayList<CreateFolder>()
+    private fun parseTemplate(yaml: Any) : List<Task> {
+        val result = ArrayList<Task>()
 
 
         when (yaml) {
