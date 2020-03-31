@@ -16,7 +16,7 @@ object StartingSimpleProject : Spek({
 
         describe("creating project from a simple template with only folders and files") {
             every { environment.currentDir() } returns baseDir
-            every { fileSystemHandler.readFile("/home/user/.pedreiro/${templateName}.yml") } returns Fixtures.simpleTemplate
+            every { fileSystemHandler.readFile("/home/user/.pedreiro/${templateName}.yml") } returns Fixtures.SIMPLE_TEMPLATE
 
             pedreiro.execute(arrayOf(templateName))
 
@@ -25,7 +25,7 @@ object StartingSimpleProject : Spek({
                 verify {
                     fileSystemHandler.createFolder("${baseDir}/test/src/main/kotlin")
                     fileSystemHandler.createFolder("${baseDir}/test/src/main/resources")
-                    fileSystemHandler.createFile("${baseDir}/build.gradle", Fixtures.build_gradle_content)
+                    fileSystemHandler.createFile("${baseDir}/test/src/build.gradle", Fixtures.BUILD_GRADLE_CONTENT)
                }
             }
         }

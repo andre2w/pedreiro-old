@@ -45,6 +45,7 @@ dependencies {
     implementation "org.yaml:snakeyaml:1.26"
 
     testImplementation "org.junit.jupiter:junit-jupiter:5.6.1"
+    acceptanceTestImplementation "org.junit.jupiter:junit-jupiter:5.6.1"
     testImplementation "io.mockk:mockk:1.9.3.kotlin12"
     testImplementation "org.assertj:assertj-core:3.11.1"
 
