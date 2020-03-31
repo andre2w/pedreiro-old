@@ -54,6 +54,7 @@ dependencies {
     acceptanceTestImplementation "org.assertj:assertj-core:3.11.1"
     acceptanceTestImplementation "io.mockk:mockk:1.9.3.kotlin12"
 
+    integrationTestImplementation "org.assertj:assertj-core:3.11.1"
     integrationTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     integrationTestImplementation "org.junit.jupiter:junit-jupiter:5.6.1"
 }

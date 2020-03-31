@@ -1,16 +1,20 @@
 package com.github.andre2w.pedreiro
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 class FileSystemHandler {
     fun createFolder(folderPath: String) {
-        TODO("Not yet implemented")
+        Files.createDirectory(folderPath.toPath())
     }
 
     fun createFile(filePath: String, fileContent: String) {
-        TODO("Not yet implemented")
+        Files.writeString(filePath.toPath(), fileContent)
     }
 
     fun readFile(filepath: String) : String {
-        TODO("Not yet implemented")
+        return Files.readString(filepath.toPath())
     }
 
+    private fun String.toPath() = Paths.get(this)
 }
