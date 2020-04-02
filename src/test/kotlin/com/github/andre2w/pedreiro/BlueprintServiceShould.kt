@@ -46,12 +46,13 @@ class BlueprintServiceShould {
     @Test
     internal fun `parse blueprint that has text files`() {
         val blueprintName = "blueprintName"
-        val blueprint = """- type: folder
-  name: project 
-  children:
-    - type: file
-      name: build.gradle
-      content: dependencies list""".trimIndent()
+        val blueprint = """
+        - type: folder
+          name: project 
+          children:
+            - type: file
+              name: build.gradle
+              content: dependencies list""".trimIndent()
 
         val fileSystemHandler = mockk<FileSystemHandler>()
         val configuration = PedreiroConfiguration("/home/user/.pedreiro")

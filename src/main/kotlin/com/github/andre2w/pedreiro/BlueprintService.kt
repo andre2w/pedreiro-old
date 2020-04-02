@@ -1,47 +1,54 @@
 package com.github.andre2w.pedreiro
 
-import org.yaml.snakeyaml.Yaml
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 
 class BlueprintService(
     private val configuration: PedreiroConfiguration,
     private val fileSystemHandler: FileSystemHandler
 ) {
-    fun loadBlueprint(blueprintName: String) : List<Task> {
-        val blueprint = fileSystemHandler.readFile("${configuration.blueprintsFolder}/${blueprintName}.yml")
-        val yaml = Yaml()
-        val yamlTemplate = yaml.load<Any>(blueprint)
 
-        return parseBlueprint(yamlTemplate)
+    private val objectMapper  by lazy {
+        ObjectMapper(YAMLFactory()).registerModule(KotlinModule())
     }
 
-    private fun parseBlueprint(yaml: Any) : List<Task> {
+    fun loadBlueprint(blueprintName: String) : List<Task> {
+        val blueprint = fileSystemHandler.readFile("${configuration.blueprintsFolder}/${blueprintName}.yml")
+
+        val tree = objectMapper.readTree(blueprint)
+
+
+        return parseBlueprint(tree)
+    }
+
+    private fun parseBlueprint(tree: JsonNode) : List<Task> {
         val result = ArrayList<Task>()
 
-
-        when (yaml) {
-            is List<*> -> (yaml as List<Any>).forEach { item -> result.addAll(parseBlueprint(item)) }
-            is Map<*, *> -> result.addAll(parseEntry(yaml as Map<String, Any>, ""))
-            else -> println(yaml)
+        when {
+            tree.isArray -> tree.forEach { node -> result.addAll(parseBlueprint(node)) }
+            else -> result.addAll(parseEntry("", tree))
         }
 
         return result
     }
 
-    private fun parseEntry(entry: Map<String, Any>, level: String): List<Task> {
-        val path = if (level.isEmpty()) entry["name"].toString() else level + "/" + entry["name"]
+    private fun parseEntry(level: String, tree: JsonNode): List<Task> {
 
-        if (entry["type"] == "file") {
-            return listOf(CreateFile(path , entry["content"].toString()))
+
+        val path = if (level.isEmpty()) tree.get("name").asText() else level + "/" + tree.get("name").asText()
+
+        if (tree["type"].asText() == "file") {
+            return listOf(CreateFile(path , tree["content"].asText()))
         }
 
         val result = ArrayList<Task>()
 
         result.add( CreateFolder(path) )
 
-        entry["children"]?.let { children ->
-            (children as List<Map<String,Any>>).forEach { child ->
-                result.addAll( parseEntry(child, path) )
-            }
+        tree["children"]?.forEach { child ->
+            result.addAll( parseEntry(path, child))
         }
 
         return result

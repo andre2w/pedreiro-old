@@ -1,17 +1,20 @@
 package com.github.andre2w.pedreiro
 
-import org.yaml.snakeyaml.Yaml
-import org.yaml.snakeyaml.constructor.Constructor
-import java.lang.IllegalArgumentException
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 
 class ConfigurationManager(private val fileSystemHandler: FileSystemHandler) {
+
+    private val objectMapper  by lazy {
+        ObjectMapper(YAMLFactory()).registerModule(KotlinModule())
+    }
+
     fun loadConfiguration(configFilePath: String): PedreiroConfiguration {
-        val yaml = Yaml()
-
         val configuration = fileSystemHandler.readFile(configFilePath)
-        val parsedConfiguration = yaml.load<Any>(configuration)
 
-        return PedreiroConfiguration((parsedConfiguration as Map<String, String>)["blueprintsFolder"]!!)
+        return objectMapper.readValue(configuration)
     }
 
 }
