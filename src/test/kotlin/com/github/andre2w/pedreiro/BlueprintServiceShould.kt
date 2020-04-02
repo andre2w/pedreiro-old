@@ -5,31 +5,33 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class TemplateServiceShould {
+class BlueprintServiceShould {
 
     @Test
-    fun `parse template that only create folders`() {
-        val templateName = "templateName"
-        val template = """- type: folder
-  name: project 
-  children:
-    - type: folder
-      name: src
-      children:
+    fun `parse blueprint that only create folders`() {
+        val blueprintName = "blueprintName"
+        val blueprint = """
         - type: folder
-          name: main
+          name: project 
           children:
             - type: folder
-              name: kotlin
-            - type: folder
-              name: resources""".trimIndent()
+              name: src
+              children:
+                 - type: folder
+                   name: main
+                   children:
+                     - type: folder
+                       name: kotlin
+                     - type: folder
+                       name: resources
+        """.trimIndent()
         val fileSystemHandler = mockk<FileSystemHandler>()
         val configuration = PedreiroConfiguration("/home/user/.pedreiro")
-        every { fileSystemHandler.readFile("/home/user/.pedreiro/${templateName}.yml") } returns template
+        every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml") } returns blueprint
 
-        val templateService = TemplateService(configuration, fileSystemHandler)
+        val blueprintService = BlueprintService(configuration, fileSystemHandler)
 
-        val loadedTasks = templateService.loadTemplate(templateName)
+        val loadedTasks = blueprintService.loadBlueprint(blueprintName)
 
         val tasks = listOf(
             CreateFolder("project"),
@@ -42,9 +44,9 @@ class TemplateServiceShould {
     }
 
     @Test
-    internal fun `parse template that has text files`() {
-        val templateName = "templateName"
-        val template = """- type: folder
+    internal fun `parse blueprint that has text files`() {
+        val blueprintName = "blueprintName"
+        val blueprint = """- type: folder
   name: project 
   children:
     - type: file
@@ -53,11 +55,11 @@ class TemplateServiceShould {
 
         val fileSystemHandler = mockk<FileSystemHandler>()
         val configuration = PedreiroConfiguration("/home/user/.pedreiro")
-        every { fileSystemHandler.readFile("/home/user/.pedreiro/${templateName}.yml") } returns template
+        every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml") } returns blueprint
 
-        val templateService = TemplateService(configuration, fileSystemHandler)
+        val blueprintService = BlueprintService(configuration, fileSystemHandler)
 
-        val loadedTasks = templateService.loadTemplate(templateName)
+        val loadedTasks = blueprintService.loadBlueprint(blueprintName)
 
         val tasks = listOf(
             CreateFolder("project"),

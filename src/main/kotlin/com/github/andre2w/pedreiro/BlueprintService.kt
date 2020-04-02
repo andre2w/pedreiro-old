@@ -2,24 +2,24 @@ package com.github.andre2w.pedreiro
 
 import org.yaml.snakeyaml.Yaml
 
-class TemplateService(
+class BlueprintService(
     private val configuration: PedreiroConfiguration,
     private val fileSystemHandler: FileSystemHandler
 ) {
-    fun loadTemplate(templateName: String) : List<Task> {
-        val template = fileSystemHandler.readFile("${configuration.templatesFolder}/${templateName}.yml")
+    fun loadBlueprint(blueprintName: String) : List<Task> {
+        val blueprint = fileSystemHandler.readFile("${configuration.blueprintsFolder}/${blueprintName}.yml")
         val yaml = Yaml()
-        val yamlTemplate = yaml.load<Any>(template)
+        val yamlTemplate = yaml.load<Any>(blueprint)
 
-        return parseTemplate(yamlTemplate)
+        return parseBlueprint(yamlTemplate)
     }
 
-    private fun parseTemplate(yaml: Any) : List<Task> {
+    private fun parseBlueprint(yaml: Any) : List<Task> {
         val result = ArrayList<Task>()
 
 
         when (yaml) {
-            is List<*> -> (yaml as List<Any>).forEach { item -> result.addAll(parseTemplate(item)) }
+            is List<*> -> (yaml as List<Any>).forEach { item -> result.addAll(parseBlueprint(item)) }
             is Map<*, *> -> result.addAll(parseEntry(yaml as Map<String, Any>, ""))
             else -> println(yaml)
         }

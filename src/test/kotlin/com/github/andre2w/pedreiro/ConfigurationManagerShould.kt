@@ -9,12 +9,12 @@ class ConfigurationManagerShould {
 
     @Test
     internal fun `retrieve configurations from the file system`() {
-        val templatesFolder = "/home/pedreiro/.pedreiro/templates"
+        val blueprintsFolder = "/home/pedreiro/.pedreiro/blueprints"
         val configFilePath = "/home/pedreiro/.pedreiro/config.yaml"
         val configurationFile = """
-            templatesFolder: "$templatesFolder"
+            blueprintsFolder: "$blueprintsFolder"
         """.trimIndent()
-        val configuration = PedreiroConfiguration(templatesFolder)
+        val configuration = PedreiroConfiguration(blueprintsFolder)
         val fileSystemHandler = mockk<FileSystemHandler>()
         every { fileSystemHandler.readFile(configFilePath) } returns configurationFile
 

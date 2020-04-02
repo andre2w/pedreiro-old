@@ -11,7 +11,7 @@ class ConfigurationManager(private val fileSystemHandler: FileSystemHandler) {
         val configuration = fileSystemHandler.readFile(configFilePath)
         val parsedConfiguration = yaml.load<Any>(configuration)
 
-        return PedreiroConfiguration((parsedConfiguration as Map<String, String>)["templatesFolder"]!!)
+        return PedreiroConfiguration((parsedConfiguration as Map<String, String>)["blueprintsFolder"]!!)
     }
 
 }

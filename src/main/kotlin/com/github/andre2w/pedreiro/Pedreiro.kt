@@ -10,19 +10,19 @@ class Pedreiro(
         val configurationManager = ConfigurationManager(fileSystemHandler)
         val pedreiroConfiguration =
             configurationManager.loadConfiguration(environment.userHome() + "/.pedreiro/configuration.yml")
-        val templateService = TemplateService(pedreiroConfiguration, fileSystemHandler)
+        val blueprintService = BlueprintService(pedreiroConfiguration, fileSystemHandler)
         val scaffoldingService = ScaffoldingService(fileSystemHandler, environment)
 
         val arguments = argumentParser.parse(arguments)
-        build(templateService, arguments, scaffoldingService)
+        build(blueprintService, arguments, scaffoldingService)
     }
 
     private fun build(
-        templateService: TemplateService,
+        blueprintService: BlueprintService,
         arguments: Arguments,
         scaffoldingService: ScaffoldingService
     ) {
-        val tasks = templateService.loadTemplate(arguments.templateName)
+        val tasks = blueprintService.loadBlueprint(arguments.blueprintsFolder)
         scaffoldingService.executeTasks(tasks)
     }
 

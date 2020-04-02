@@ -8,20 +8,20 @@ import org.junit.jupiter.api.Test
 class BuildServiceShould {
 
     @Test
-    fun `get tasks from template and execute them`() {
+    fun `get tasks from blueprint and execute them`() {
         val scaffoldingService = mockk<ScaffoldingService>(relaxed = true)
-        val templateService = mockk<TemplateService>(relaxed = true)
+        val blueprintService = mockk<BlueprintService>(relaxed = true)
         val tasks = listOf(
             CreateFolder("project"),
             CreateFolder("project/src"),
             CreateFolder("project/src/main"),
             CreateFolder("project/src/test")
         )
-        val templateName = "baseTemplate"
-        val args = Arguments(templateName)
-        every { templateService.loadTemplate(templateName) } returns tasks
+        val blueprintName = "baseTemplate"
+        val args = Arguments(blueprintName)
+        every { blueprintService.loadBlueprint(blueprintName) } returns tasks
 
-        val buildService = BuildService(templateService, scaffoldingService)
+        val buildService = BuildService(blueprintService, scaffoldingService)
         buildService.build(args)
 
         verify {

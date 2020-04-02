@@ -7,7 +7,7 @@ class Fixtures {
 
         val CONFIGURATION = """
             ---
-            templatesFolder: "/home/user/pedreiro/.pedreiro/templates"
+            blueprintsFolder: "/home/user/pedreiro/.pedreiro/blueprints"
         """.trimIndent()
 
         val BUILD_GRADLE_CONTENT = """
