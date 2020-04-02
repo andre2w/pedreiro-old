@@ -5,13 +5,12 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 
-class PedreiroShould {
+class BuildServiceShould {
 
     @Test
-    fun `main application should get tasks from template and execute them`() {
+    fun `get tasks from template and execute them`() {
         val scaffoldingService = mockk<ScaffoldingService>(relaxed = true)
         val templateService = mockk<TemplateService>(relaxed = true)
-        val argumentParser = mockk<ArgumentParser>()
         val tasks = listOf(
             CreateFolder("project"),
             CreateFolder("project/src"),
@@ -21,10 +20,9 @@ class PedreiroShould {
         val templateName = "baseTemplate"
         val args = Arguments(templateName)
         every { templateService.loadTemplate(templateName) } returns tasks
-        every { argumentParser.parse(arrayOf(templateName)) } returns args
 
-        val pedreiro = Pedreiro(scaffoldingService, templateService, argumentParser)
-        pedreiro.execute(arrayOf(templateName))
+        val buildService = BuildService(templateService, scaffoldingService)
+        buildService.build(args)
 
         verify {
             scaffoldingService.executeTasks(tasks)

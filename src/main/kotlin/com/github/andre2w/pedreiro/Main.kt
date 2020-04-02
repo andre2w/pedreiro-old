@@ -5,12 +5,7 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            val fileSystemHandler = FileSystemHandler()
-            Pedreiro(
-                ScaffoldingService(fileSystemHandler, Environment()),
-                TemplateService( PedreiroConfiguration(""), fileSystemHandler ),
-                ArgumentParser()
-            ).execute(args)
+            Pedreiro(FileSystemHandler(), Environment()).execute(args)
         }
     }
 }

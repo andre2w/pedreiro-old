@@ -10,14 +10,18 @@ object StartingSimpleProject : Spek({
 
     describe("The Pedreiro cli") {
         val baseDir = "/home/user/projects"
+        val homeDir = "/home/user/pedreiro"
         val templateName = "baseGradle"
 
-        val (fileSystemHandler, environment, pedreiro) = createPedreiroInstance()
+        val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
+        val environment = mockk<Environment>(relaxUnitFun = true)
+        val pedreiro = Pedreiro(fileSystemHandler, environment)
 
         describe("creating project from a simple template with only folders and files") {
             every { environment.currentDir() } returns baseDir
-            every { fileSystemHandler.readFile("/home/user/.pedreiro/${templateName}.yml") } returns Fixtures.SIMPLE_TEMPLATE
-
+            every { environment.userHome() } returns homeDir
+            every { fileSystemHandler.readFile("$homeDir/.pedreiro/configuration.yml") } returns Fixtures.CONFIGURATION
+            every { fileSystemHandler.readFile("$homeDir/.pedreiro/templates/${templateName}.yml") } returns Fixtures.SIMPLE_TEMPLATE
             pedreiro.execute(arrayOf(templateName))
 
             it("should create the file structure declared in the template") {
@@ -32,13 +36,3 @@ object StartingSimpleProject : Spek({
     }
 })
 
-private fun createPedreiroInstance(): Triple<FileSystemHandler, Environment, Pedreiro> {
-    val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
-    val environment = mockk<Environment>()
-    val scaffoldingService = ScaffoldingService(fileSystemHandler, environment)
-    val configuration = PedreiroConfiguration("/home/user/.pedreiro")
-    val templateService = TemplateService(configuration, fileSystemHandler)
-    val argumentParser = ArgumentParser()
-    val pedreiro = Pedreiro(scaffoldingService, templateService, argumentParser)
-    return Triple(fileSystemHandler, environment, pedreiro)
-}
