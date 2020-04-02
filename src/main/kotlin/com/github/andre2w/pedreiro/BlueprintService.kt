@@ -1,24 +1,17 @@
 package com.github.andre2w.pedreiro
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 
 class BlueprintService(
     private val configuration: PedreiroConfiguration,
     private val fileSystemHandler: FileSystemHandler
 ) {
 
-    private val objectMapper  by lazy {
-        ObjectMapper(YAMLFactory()).registerModule(KotlinModule())
-    }
+    private val objectMapper = YAMLParser.objectMapper
 
     fun loadBlueprint(blueprintName: String) : List<Task> {
         val blueprint = fileSystemHandler.readFile("${configuration.blueprintsFolder}/${blueprintName}.yml")
-
         val tree = objectMapper.readTree(blueprint)
-
 
         return parseBlueprint(tree)
     }
