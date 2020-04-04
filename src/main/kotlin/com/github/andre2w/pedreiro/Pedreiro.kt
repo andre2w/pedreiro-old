@@ -7,6 +7,7 @@ class Pedreiro(
 ) {
 
     fun execute(arguments: Array<String>) {
+        consoleHandler.print("Setting up Pedreiro toolbox")
         val argumentParser = ArgumentParser()
         val configurationManager = ConfigurationManager(fileSystemHandler)
         val pedreiroConfiguration =
@@ -18,7 +19,7 @@ class Pedreiro(
         build(blueprintService, arguments, scaffoldingService)
 
         consoleHandler.print("Project created. You can start to work now.")
-        consoleHandler.exitWith(1)
+        consoleHandler.exitWith(0)
     }
 
     private fun build(

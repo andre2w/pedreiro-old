@@ -42,7 +42,7 @@ object StartingSimpleProject : Spek({
                 verify {
                     consoleHandler.print("Creating project from blueprint ($blueprintPath)")
                     consoleHandler.print("Project created. You can start to work now.")
-                    consoleHandler.exitWith(1)
+                    consoleHandler.exitWith(0)
                 }
             }
         }
