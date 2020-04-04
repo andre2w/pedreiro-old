@@ -4,13 +4,18 @@ import com.fasterxml.jackson.databind.JsonNode
 
 class BlueprintService(
     private val configuration: PedreiroConfiguration,
-    private val fileSystemHandler: FileSystemHandler
+    private val fileSystemHandler: FileSystemHandler,
+    private val consoleHandler: ConsoleHandler
 ) {
 
     private val objectMapper = YAMLParser.objectMapper
 
     fun loadBlueprint(blueprintName: String) : List<Task> {
-        val blueprint = fileSystemHandler.readFile("${configuration.blueprintsFolder}/${blueprintName}.yml")
+        val blueprintPath = "${configuration.blueprintsFolder}/${blueprintName}.yml"
+        val blueprint = fileSystemHandler.readFile(blueprintPath)
+
+        consoleHandler.print("Creating project from blueprint ($blueprintPath)")
+
         val tree = objectMapper.readTree(blueprint)
 
         return parseBlueprint(tree)

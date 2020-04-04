@@ -42,7 +42,6 @@ sourceSets {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.yaml:snakeyaml:1.26"
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.11.6'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.3'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.3'
@@ -53,11 +52,14 @@ dependencies {
     testImplementation "io.mockk:mockk:1.9.3.kotlin12"
     testImplementation "org.assertj:assertj-core:3.11.1"
 
-    acceptanceTestRuntime "org.yaml:snakeyaml:1.26"
     acceptanceTestImplementation "org.spekframework.spek2:spek-dsl-jvm:$spek_version"
     acceptanceTestImplementation "org.spekframework.spek2:spek-runner-junit5:$spek_version"
     acceptanceTestImplementation "org.assertj:assertj-core:3.11.1"
     acceptanceTestImplementation "io.mockk:mockk:1.9.3.kotlin12"
+    acceptanceTestImplementation 'com.fasterxml.jackson.core:jackson-databind:2.8.11.6'
+    acceptanceTestImplementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.3'
+    acceptanceTestImplementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.3'
+
 
     integrationTestImplementation "org.assertj:assertj-core:3.11.1"
     integrationTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

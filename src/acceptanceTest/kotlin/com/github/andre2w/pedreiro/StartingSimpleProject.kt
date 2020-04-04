@@ -12,25 +12,38 @@ object StartingSimpleProject : Spek({
         val baseDir = "/home/user/projects"
         val homeDir = "/home/user/pedreiro"
         val blueprintName = "baseGradle"
+        val configurationPath = "$homeDir/.pedreiro/configuration.yml"
 
         val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
         val environment = mockk<Environment>(relaxUnitFun = true)
-        val pedreiro = Pedreiro(fileSystemHandler, environment)
+        val consoleHandler = mockk<ConsoleHandler>(relaxUnitFun = true)
+        val blueprintPath = "$homeDir/.pedreiro/blueprints/${blueprintName}.yml"
+
+        val pedreiro = Pedreiro(fileSystemHandler, environment, consoleHandler)
 
         describe("creating project from a simple blueprint with only folders and files") {
             every { environment.currentDir() } returns baseDir
             every { environment.userHome() } returns homeDir
-            every { fileSystemHandler.readFile("$homeDir/.pedreiro/configuration.yml") } returns Fixtures.CONFIGURATION
-            every { fileSystemHandler.readFile("$homeDir/.pedreiro/blueprints/${blueprintName}.yml") } returns Fixtures.SIMPLE_TEMPLATE
+            every { fileSystemHandler.readFile(configurationPath) } returns Fixtures.CONFIGURATION
+            every { fileSystemHandler.readFile(blueprintPath) } returns Fixtures.SIMPLE_TEMPLATE
+
+
             pedreiro.execute(arrayOf(blueprintName))
 
             it("should create the file structure declared in the blueprint") {
-
                 verify {
                     fileSystemHandler.createFolder("${baseDir}/test/src/main/kotlin")
                     fileSystemHandler.createFolder("${baseDir}/test/src/main/resources")
                     fileSystemHandler.createFile("${baseDir}/test/src/build.gradle", Fixtures.BUILD_GRADLE_CONTENT)
                }
+            }
+
+            it ("should print print information about template creation and when its done") {
+                verify {
+                    consoleHandler.print("Creating project from blueprint ($blueprintPath)")
+                    consoleHandler.print("Project created. You can start to work now.")
+                    consoleHandler.exitWith(1)
+                }
             }
         }
     }

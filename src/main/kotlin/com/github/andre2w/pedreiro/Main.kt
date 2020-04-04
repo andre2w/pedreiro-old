@@ -5,7 +5,7 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            Pedreiro(FileSystemHandler(), Environment()).execute(args)
+            Pedreiro(FileSystemHandler(), Environment(), ConsoleHandler()).execute(args)
         }
     }
 }

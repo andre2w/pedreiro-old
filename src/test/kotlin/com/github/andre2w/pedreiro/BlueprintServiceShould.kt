@@ -2,10 +2,16 @@ package com.github.andre2w.pedreiro
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class BlueprintServiceShould {
+
+    private val fileSystemHandler = mockk<FileSystemHandler>()
+    private val consoleHandler = mockk<ConsoleHandler>(relaxUnitFun = true)
+    private val configuration = PedreiroConfiguration("/home/user/.pedreiro")
+    private val blueprintService = BlueprintService(configuration, fileSystemHandler, consoleHandler)
 
     @Test
     fun `parse blueprint that only create folders`() {
@@ -25,11 +31,7 @@ class BlueprintServiceShould {
                      - type: folder
                        name: resources
         """.trimIndent()
-        val fileSystemHandler = mockk<FileSystemHandler>()
-        val configuration = PedreiroConfiguration("/home/user/.pedreiro")
         every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml") } returns blueprint
-
-        val blueprintService = BlueprintService(configuration, fileSystemHandler)
 
         val loadedTasks = blueprintService.loadBlueprint(blueprintName)
 
@@ -44,7 +46,7 @@ class BlueprintServiceShould {
     }
 
     @Test
-    internal fun `parse blueprint that has text files`() {
+    fun `parse blueprint that has text files`() {
         val blueprintName = "blueprintName"
         val blueprint = """
         - type: folder
@@ -53,12 +55,7 @@ class BlueprintServiceShould {
             - type: file
               name: build.gradle
               content: dependencies list""".trimIndent()
-
-        val fileSystemHandler = mockk<FileSystemHandler>()
-        val configuration = PedreiroConfiguration("/home/user/.pedreiro")
         every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml") } returns blueprint
-
-        val blueprintService = BlueprintService(configuration, fileSystemHandler)
 
         val loadedTasks = blueprintService.loadBlueprint(blueprintName)
 
@@ -68,5 +65,22 @@ class BlueprintServiceShould {
         )
 
         assertThat(loadedTasks).isEqualTo(tasks)
+    }
+
+    @Test
+    fun `print message with loaded blueprint`() {
+        val blueprintName = "blueprintName"
+        val blueprint = """
+          - type: folder
+            name: project
+          """.trimIndent()
+        val blueprintPath = "/home/user/.pedreiro/${blueprintName}.yml"
+        every { fileSystemHandler.readFile(blueprintPath) } returns blueprint
+
+        blueprintService.loadBlueprint(blueprintName)
+
+        verify {
+            consoleHandler.print("Creating project from blueprint ($blueprintPath)")
+        }
     }
 }
