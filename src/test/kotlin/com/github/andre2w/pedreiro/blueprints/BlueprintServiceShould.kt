@@ -1,8 +1,5 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.blueprints
 
-import com.github.andre2w.pedreiro.blueprints.BlueprintService
-import com.github.andre2w.pedreiro.blueprints.CreateFile
-import com.github.andre2w.pedreiro.blueprints.CreateFolder
 import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler

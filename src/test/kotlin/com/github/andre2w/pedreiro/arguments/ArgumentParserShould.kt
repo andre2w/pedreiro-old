@@ -1,4 +1,4 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.arguments
 
 import com.github.andre2w.pedreiro.arguments.ArgumentParser
 import com.github.andre2w.pedreiro.arguments.Arguments

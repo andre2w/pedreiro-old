@@ -1,7 +1,5 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.configuration
 
-import com.github.andre2w.pedreiro.configuration.ConfigurationManager
-import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import io.mockk.every
 import io.mockk.mockk

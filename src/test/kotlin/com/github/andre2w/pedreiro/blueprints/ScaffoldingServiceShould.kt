@@ -1,4 +1,4 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.blueprints
 
 import com.github.andre2w.pedreiro.blueprints.CreateFile
 import com.github.andre2w.pedreiro.blueprints.CreateFolder
