@@ -1,5 +1,10 @@
 package com.github.andre2w.pedreiro
 
+import com.github.andre2w.pedreiro.arguments.Arguments
+import com.github.andre2w.pedreiro.blueprints.BlueprintService
+import com.github.andre2w.pedreiro.blueprints.BuildService
+import com.github.andre2w.pedreiro.blueprints.CreateFolder
+import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -21,7 +26,8 @@ class BuildServiceShould {
         val args = Arguments(blueprintName)
         every { blueprintService.loadBlueprint(blueprintName) } returns tasks
 
-        val buildService = BuildService(blueprintService, scaffoldingService)
+        val buildService =
+            BuildService(blueprintService, scaffoldingService)
         buildService.build(args)
 
         verify {

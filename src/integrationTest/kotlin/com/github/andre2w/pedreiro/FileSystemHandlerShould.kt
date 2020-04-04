@@ -1,5 +1,6 @@
 package com.github.andre2w.pedreiro
 
+import com.github.andre2w.pedreiro.io.FileSystemHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.nio.file.Files

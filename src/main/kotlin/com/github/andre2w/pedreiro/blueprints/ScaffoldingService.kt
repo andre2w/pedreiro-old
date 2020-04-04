@@ -1,4 +1,7 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.blueprints
+
+import com.github.andre2w.pedreiro.io.Environment
+import com.github.andre2w.pedreiro.io.FileSystemHandler
 
 class ScaffoldingService(
     private val fileSystemHandler: FileSystemHandler,

@@ -1,5 +1,11 @@
 package com.github.andre2w.pedreiro
 
+import com.github.andre2w.pedreiro.blueprints.BlueprintService
+import com.github.andre2w.pedreiro.blueprints.CreateFile
+import com.github.andre2w.pedreiro.blueprints.CreateFolder
+import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
+import com.github.andre2w.pedreiro.io.ConsoleHandler
+import com.github.andre2w.pedreiro.io.FileSystemHandler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -10,8 +16,13 @@ class BlueprintServiceShould {
 
     private val fileSystemHandler = mockk<FileSystemHandler>()
     private val consoleHandler = mockk<ConsoleHandler>(relaxUnitFun = true)
-    private val configuration = PedreiroConfiguration("/home/user/.pedreiro")
-    private val blueprintService = BlueprintService(configuration, fileSystemHandler, consoleHandler)
+    private val configuration =
+        PedreiroConfiguration("/home/user/.pedreiro")
+    private val blueprintService = BlueprintService(
+        configuration,
+        fileSystemHandler,
+        consoleHandler
+    )
 
     @Test
     fun `parse blueprint that only create folders`() {
@@ -40,7 +51,8 @@ class BlueprintServiceShould {
             CreateFolder("project/src"),
             CreateFolder("project/src/main"),
             CreateFolder("project/src/main/kotlin"),
-            CreateFolder("project/src/main/resources"))
+            CreateFolder("project/src/main/resources")
+        )
 
         assertThat(loadedTasks).isEqualTo(tasks)
     }
@@ -61,7 +73,10 @@ class BlueprintServiceShould {
 
         val tasks = listOf(
             CreateFolder("project"),
-            CreateFile("project/build.gradle", "dependencies list")
+            CreateFile(
+                "project/build.gradle",
+                "dependencies list"
+            )
         )
 
         assertThat(loadedTasks).isEqualTo(tasks)

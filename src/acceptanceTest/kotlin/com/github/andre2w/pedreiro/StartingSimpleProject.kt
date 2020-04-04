@@ -1,5 +1,8 @@
 package com.github.andre2w.pedreiro
 
+import com.github.andre2w.pedreiro.io.ConsoleHandler
+import com.github.andre2w.pedreiro.io.Environment
+import com.github.andre2w.pedreiro.io.FileSystemHandler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

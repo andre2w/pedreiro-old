@@ -1,4 +1,4 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.io
 
 import java.nio.file.Files
 import java.nio.file.Paths

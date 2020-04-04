@@ -1,6 +1,10 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.blueprints
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
+import com.github.andre2w.pedreiro.io.ConsoleHandler
+import com.github.andre2w.pedreiro.io.FileSystemHandler
+import com.github.andre2w.pedreiro.io.YAMLParser
 
 class BlueprintService(
     private val configuration: PedreiroConfiguration,
@@ -38,12 +42,17 @@ class BlueprintService(
         val path = if (level.isEmpty()) tree.get("name").asText() else level + "/" + tree.get("name").asText()
 
         if (tree["type"].asText() == "file") {
-            return listOf(CreateFile(path , tree["content"].asText()))
+            return listOf(
+                CreateFile(
+                    path,
+                    tree["content"].asText()
+                )
+            )
         }
 
         val result = ArrayList<Task>()
 
-        result.add( CreateFolder(path) )
+        result.add(CreateFolder(path))
 
         tree["children"]?.forEach { child ->
             result.addAll( parseEntry(path, child))

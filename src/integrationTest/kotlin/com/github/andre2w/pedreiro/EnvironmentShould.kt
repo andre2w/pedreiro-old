@@ -1,5 +1,6 @@
 package com.github.andre2w.pedreiro
 
+import com.github.andre2w.pedreiro.io.Environment
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

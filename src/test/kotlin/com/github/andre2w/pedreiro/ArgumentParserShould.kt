@@ -1,5 +1,7 @@
 package com.github.andre2w.pedreiro
 
+import com.github.andre2w.pedreiro.arguments.ArgumentParser
+import com.github.andre2w.pedreiro.arguments.Arguments
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

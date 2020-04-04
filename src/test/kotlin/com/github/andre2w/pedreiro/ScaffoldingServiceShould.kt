@@ -1,5 +1,10 @@
 package com.github.andre2w.pedreiro
 
+import com.github.andre2w.pedreiro.blueprints.CreateFile
+import com.github.andre2w.pedreiro.blueprints.CreateFolder
+import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
+import com.github.andre2w.pedreiro.io.Environment
+import com.github.andre2w.pedreiro.io.FileSystemHandler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -14,7 +19,8 @@ class ScaffoldingServiceShould {
         val baseDir = "/home/user/projects"
         every { environment.currentDir() } returns baseDir
 
-        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment)
+        val scaffoldingService =
+            ScaffoldingService(fileSystemHandler, environment)
         val tasks = listOf(
             CreateFolder("pedreiro"),
             CreateFolder("pedreiro/src")
@@ -34,10 +40,14 @@ class ScaffoldingServiceShould {
         val baseDir = "/home/user/projects"
         every { environment.currentDir() } returns baseDir
 
-        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment)
+        val scaffoldingService =
+            ScaffoldingService(fileSystemHandler, environment)
         val tasks = listOf(
             CreateFolder("pedreiro"),
-            CreateFile("pedreiro/build.gradle", "dependencies")
+            CreateFile(
+                "pedreiro/build.gradle",
+                "dependencies"
+            )
         )
         scaffoldingService.executeTasks(tasks)
 

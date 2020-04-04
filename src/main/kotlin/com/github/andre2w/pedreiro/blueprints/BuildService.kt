@@ -1,4 +1,8 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.blueprints
+
+import com.github.andre2w.pedreiro.arguments.Arguments
+import com.github.andre2w.pedreiro.blueprints.BlueprintService
+import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
 
 class BuildService(
     private val blueprintService: BlueprintService,

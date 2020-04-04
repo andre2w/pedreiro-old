@@ -1,4 +1,4 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.io
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory

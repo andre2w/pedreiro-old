@@ -1,4 +1,4 @@
-package com.github.andre2w.pedreiro
+package com.github.andre2w.pedreiro.io
 
 class Environment {
 
