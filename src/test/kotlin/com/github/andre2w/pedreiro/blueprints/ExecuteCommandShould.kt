@@ -58,4 +58,24 @@ class ExecuteCommandShould {
 
         assertThat(parsedCommand).isEqualTo(expectedCommand)
     }
+
+    @Test
+    fun `parse command with nested quotes`() {
+        val executeCommand = ExecuteCommand("echo \"this \'is a\' message\"", "")
+        val parsedCommand = executeCommand.parsedCommand
+
+        val expectedCommand = listOf("echo","this \'is a\' message")
+
+        assertThat(parsedCommand).isEqualTo(expectedCommand)
+    }
+
+    @Test
+    fun `parse command with nested double quotes`() {
+        val executeCommand = ExecuteCommand("echo \'this \"is a\" message\'", "")
+        val parsedCommand = executeCommand.parsedCommand
+
+        val expectedCommand = listOf("echo","this \"is a\" message")
+
+        assertThat(parsedCommand).isEqualTo(expectedCommand)
+    }
 }

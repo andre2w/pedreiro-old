@@ -17,7 +17,8 @@ data class ExecuteCommand(val command: String, val folder: String) : Task {
 
         var currentWord = ""
         var inString = false
-        var isQuotedChar = false
+        var startingQuote = ' '
+        var isEscapedChar = false
 
         for (character in command) {
             if (character == ' ' && !inString) {
@@ -27,16 +28,25 @@ data class ExecuteCommand(val command: String, val folder: String) : Task {
             }
 
             if (character == '\\') {
-                isQuotedChar = true
+                isEscapedChar = true
                 continue
             }
 
-            if (character in delimiters && !isQuotedChar) {
-                inString = !inString
-                continue
+            if (character in delimiters && !isEscapedChar) {
+                if (character == startingQuote || startingQuote == ' ') {
+                    inString = !inString
+
+                    startingQuote = if (startingQuote != ' ') {
+                        ' '
+                    } else {
+                        character
+                    }
+
+                    continue
+                }
             }
 
-            isQuotedChar = false
+            isEscapedChar = false
             currentWord += character
         }
 
