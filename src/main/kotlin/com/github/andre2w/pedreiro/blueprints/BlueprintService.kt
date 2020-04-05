@@ -16,7 +16,7 @@ class BlueprintService(
 
     fun loadBlueprint(blueprintName: String) : List<Task> {
         val blueprintPath = "${configuration.blueprintsFolder}/${blueprintName}.yml"
-        val blueprint = fileSystemHandler.readFile(blueprintPath)
+        val blueprint = fileSystemHandler.readFile(blueprintPath) ?: throw BlueprintNotFound(blueprintPath)
 
         consoleHandler.print("Creating project from blueprint ($blueprintPath)")
 

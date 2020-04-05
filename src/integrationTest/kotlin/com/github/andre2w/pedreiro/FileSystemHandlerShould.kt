@@ -53,4 +53,11 @@ class FileSystemHandlerShould {
         assertThat(Files.exists(Paths.get(folderPath))).isTrue()
         Files.delete(Paths.get(folderPath))
     }
+
+    @Test
+    internal fun `return null when file is not found`() {
+        val readContent = fileSystemHandler.readFile(filePath)
+
+        assertThat(readContent).isNull()
+    }
 }

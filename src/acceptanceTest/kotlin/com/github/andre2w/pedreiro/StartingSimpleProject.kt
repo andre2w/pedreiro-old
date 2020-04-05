@@ -83,6 +83,23 @@ object StartingSimpleProject : Spek({
             }
 
         }
+
+        describe("when creating a project from a blueprint that doesn't exists") {
+            every { environment.currentDir() } returns baseDir
+            every { environment.userHome() } returns homeDir
+            every { fileSystemHandler.readFile(configurationPath) } returns Fixtures.CONFIGURATION
+            every { fileSystemHandler.readFile(blueprintPath) } returns null
+
+            pedreiro.execute(arrayOf(blueprintName))
+
+            it("should display message saying that template was not found") {
+                verify { consoleHandler.print("Could not find template $blueprintName ($blueprintPath)") }
+            }
+
+            it("should exit with status code of 1") {
+                verify { consoleHandler.exitWith(1) }
+            }
+        }
     }
 })
 

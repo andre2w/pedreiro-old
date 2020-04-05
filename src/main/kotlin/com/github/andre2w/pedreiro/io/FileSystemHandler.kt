@@ -1,6 +1,7 @@
 package com.github.andre2w.pedreiro.io
 
 import java.nio.file.Files
+import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
 
 class FileSystemHandler {
@@ -12,8 +13,12 @@ class FileSystemHandler {
         Files.writeString(filePath.toPath(), fileContent)
     }
 
-    fun readFile(filepath: String) : String {
-        return Files.readString(filepath.toPath())
+    fun readFile(filepath: String) : String? {
+        return try {
+            Files.readString(filepath.toPath())
+        } catch (err: NoSuchFileException) {
+            null
+        }
     }
 
     private fun String.toPath() = Paths.get(this)

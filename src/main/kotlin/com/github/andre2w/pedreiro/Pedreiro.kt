@@ -2,6 +2,7 @@ package com.github.andre2w.pedreiro
 
 import com.github.andre2w.pedreiro.arguments.ArgumentParser
 import com.github.andre2w.pedreiro.arguments.Arguments
+import com.github.andre2w.pedreiro.blueprints.BlueprintNotFound
 import com.github.andre2w.pedreiro.blueprints.BlueprintService
 import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
 import com.github.andre2w.pedreiro.configuration.ConfigurationManager
@@ -19,32 +20,32 @@ class Pedreiro(
 
     fun execute(arguments: Array<String>) {
         consoleHandler.print("Setting up Pedreiro toolbox")
+
         val argumentParser = ArgumentParser()
-        val configurationManager =
-            ConfigurationManager(fileSystemHandler)
+
+        val configurationManager = ConfigurationManager(fileSystemHandler)
+
         val pedreiroConfiguration =
             configurationManager.loadConfiguration(environment.userHome() + "/.pedreiro/configuration.yml")
-        val blueprintService = BlueprintService(
-            pedreiroConfiguration,
-            fileSystemHandler,
-            consoleHandler
-        )
-        val scaffoldingService =
-            ScaffoldingService(fileSystemHandler, environment, processExecutor)
+
+        val blueprintService = BlueprintService(pedreiroConfiguration, fileSystemHandler, consoleHandler)
+
+        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor)
 
         val arguments = argumentParser.parse(arguments)
-        build(blueprintService, arguments, scaffoldingService)
 
-        consoleHandler.print("Project created. You can start to work now.")
-        consoleHandler.exitWith(0)
+        try {
+            build(blueprintService, arguments, scaffoldingService)
+            consoleHandler.print("Project created. You can start to work now.")
+            consoleHandler.exitWith(0)
+        } catch (err: BlueprintNotFound) {
+            consoleHandler.print("Could not find template ${arguments.blueprintName} (${err.blueprintPath})")
+            consoleHandler.exitWith(1)
+        }
     }
 
-    private fun build(
-        blueprintService: BlueprintService,
-        arguments: Arguments,
-        scaffoldingService: ScaffoldingService
-    ) {
-        val tasks = blueprintService.loadBlueprint(arguments.blueprintsFolder)
+    private fun build(blueprintService: BlueprintService, arguments: Arguments, scaffoldingService: ScaffoldingService) {
+        val tasks = blueprintService.loadBlueprint(arguments.blueprintName)
         scaffoldingService.executeTasks(tasks)
     }
 
