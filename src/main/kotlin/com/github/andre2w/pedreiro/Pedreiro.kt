@@ -30,7 +30,7 @@ class Pedreiro(
             consoleHandler
         )
         val scaffoldingService =
-            ScaffoldingService(fileSystemHandler, environment)
+            ScaffoldingService(fileSystemHandler, environment, processExecutor)
 
         val arguments = argumentParser.parse(arguments)
         build(blueprintService, arguments, scaffoldingService)

@@ -1,26 +1,34 @@
 package com.github.andre2w.pedreiro.blueprints
 
-import com.github.andre2w.pedreiro.blueprints.CreateFile
-import com.github.andre2w.pedreiro.blueprints.CreateFolder
-import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
+import com.github.andre2w.pedreiro.io.ProcessExecutor
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class ScaffoldingServiceShould {
 
+    private val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
+    private val environment = mockk<Environment>()
+    private val processExecutor = mockk<ProcessExecutor>()
+
+    private val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor)
+
+    private val baseDir = "/home/user/projects"
+
+    @BeforeEach
+    internal fun setUp() {
+        clearAllMocks()
+    }
+
     @Test
-    internal fun `create a folder in current location`() {
-        val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
-        val environment = mockk<Environment>()
-        val baseDir = "/home/user/projects"
+    fun `create a folder in current location`() {
         every { environment.currentDir() } returns baseDir
 
-        val scaffoldingService =
-            ScaffoldingService(fileSystemHandler, environment)
         val tasks = listOf(
             CreateFolder("pedreiro"),
             CreateFolder("pedreiro/src")
@@ -34,14 +42,9 @@ class ScaffoldingServiceShould {
     }
 
     @Test
-    internal fun `create file with contents in the current folder`() {
-        val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
-        val environment = mockk<Environment>()
-        val baseDir = "/home/user/projects"
+    fun `create file with contents in the current folder`() {
         every { environment.currentDir() } returns baseDir
 
-        val scaffoldingService =
-            ScaffoldingService(fileSystemHandler, environment)
         val tasks = listOf(
             CreateFolder("pedreiro"),
             CreateFile(
@@ -55,5 +58,18 @@ class ScaffoldingServiceShould {
             fileSystemHandler.createFolder("/home/user/projects/pedreiro")
             fileSystemHandler.createFile("/home/user/projects/pedreiro/build.gradle", "dependencies")
         }
+    }
+
+    @Test
+    fun `execute command in the specified folder`() {
+        every { environment.currentDir() } returns baseDir
+        every { processExecutor.execute("gradle init", "/home/user/projects/pedreiro") } returns 0
+        val tasks = listOf(
+            ExecuteCommand("gradle init", "pedreiro")
+        )
+
+        scaffoldingService.executeTasks(tasks)
+
+        verify { processExecutor.execute("gradle init", "/home/user/projects/pedreiro") }
     }
 }
