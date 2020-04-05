@@ -14,7 +14,7 @@ class ScaffoldingService(
             when (task) {
                 is CreateFolder -> fileSystemHandler.createFolder("${environment.currentDir()}/${task.path}")
                 is CreateFile -> fileSystemHandler.createFile("${environment.currentDir()}/${task.path}", task.content)
-                is ExecuteCommand -> processExecutor.execute(task.command, "${environment.currentDir()}/${task.folder}")
+                is ExecuteCommand -> processExecutor.execute(task.parsedCommand, "${environment.currentDir()}/${task.folder}")
             }
         }
     }

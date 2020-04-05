@@ -1,10 +1,6 @@
 package com.github.andre2w.pedreiro.blueprints
 
 import com.github.andre2w.pedreiro.arguments.Arguments
-import com.github.andre2w.pedreiro.blueprints.BlueprintService
-import com.github.andre2w.pedreiro.blueprints.BuildService
-import com.github.andre2w.pedreiro.blueprints.CreateFolder
-import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

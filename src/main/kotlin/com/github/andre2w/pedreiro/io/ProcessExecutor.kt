@@ -3,9 +3,9 @@ package com.github.andre2w.pedreiro.io
 import java.io.File
 
 class ProcessExecutor {
-    fun execute(command: String, runFolder: String) : Int {
+    fun execute(command: List<String>, runFolder: String) : Int {
         val process = ProcessBuilder()
-            .command(command.split(" "))
+            .command(command)
             .directory(File(runFolder))
             .start()
 

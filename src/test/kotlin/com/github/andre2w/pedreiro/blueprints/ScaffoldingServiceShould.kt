@@ -62,14 +62,15 @@ class ScaffoldingServiceShould {
 
     @Test
     fun `execute command in the specified folder`() {
+        val command = listOf("gradle", "init")
+        val tasks = listOf(ExecuteCommand("gradle init", "pedreiro"))
         every { environment.currentDir() } returns baseDir
-        every { processExecutor.execute("gradle init", "/home/user/projects/pedreiro") } returns 0
-        val tasks = listOf(
-            ExecuteCommand("gradle init", "pedreiro")
-        )
+        every { processExecutor.execute(command, "/home/user/projects/pedreiro") } returns 0
 
         scaffoldingService.executeTasks(tasks)
 
-        verify { processExecutor.execute("gradle init", "/home/user/projects/pedreiro") }
+        verify { processExecutor.execute(command, "/home/user/projects/pedreiro") }
     }
+
+
 }

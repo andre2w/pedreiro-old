@@ -53,7 +53,20 @@ object StartingSimpleProject : Spek({
         }
 
         describe("create a project executing a command") {
-            val command = "gradle init --type java-application --test-framework junit --dsl groovy --project-name test --package com.example.test"
+            val command = listOf(
+                "gradle",
+                "init",
+                "--type",
+                "java-application",
+                "--test-framework",
+                "junit",
+                "--dsl",
+                "groovy",
+                "--project-name",
+                "test",
+                "--package",
+                "com.example.test"
+            )
             every { environment.currentDir() } returns baseDir
             every { environment.userHome() } returns homeDir
             every { fileSystemHandler.readFile(configurationPath) } returns Fixtures.CONFIGURATION

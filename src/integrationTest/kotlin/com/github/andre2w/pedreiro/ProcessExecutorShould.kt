@@ -15,7 +15,7 @@ class ProcessExecutorShould {
         val userDir = System.getProperty("user.dir")
         val fileName = "test-${Instant.now()}.txt"
 
-        val exitCode = processExecutor.execute("touch $fileName", userDir)
+        val exitCode = processExecutor.execute(listOf("touch", fileName), userDir)
 
         val createdFile = "$userDir/$fileName"
         assertThat(Files.exists(Paths.get(createdFile))).isTrue()
