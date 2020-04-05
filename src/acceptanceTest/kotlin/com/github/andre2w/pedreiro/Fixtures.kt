@@ -5,6 +5,14 @@ class Fixtures {
 
     companion object {
 
+        val COMMAND_TEMPLATE = """
+            ---
+            - type: folder
+              name: test
+              children: 
+                - type: command
+                  command: gradle init --type java-application --test-framework junit --dsl groovy --project-name test --package com.example.test
+        """.trimIndent()
         val CONFIGURATION = """
             ---
             blueprintsFolder: "/home/user/pedreiro/.pedreiro/blueprints"

@@ -95,4 +95,27 @@ class BlueprintServiceShould {
             consoleHandler.print("Creating project from blueprint ($blueprintPath)")
         }
     }
+
+    @Test
+    internal fun `parse blueprint with command`() {
+        val blueprintName = "blueprintWithCommand"
+        val blueprint = """
+            ---
+            - type: folder
+              name: test-command
+              children:
+                - type: command
+                  command: gradle init
+        """.trimIndent()
+        every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml")} returns blueprint
+
+        val loadedTasks = blueprintService.loadBlueprint(blueprintName)
+
+        val tasks = listOf(
+            CreateFolder("test-command"),
+            ExecuteCommand("gradle init", "test-command")
+        )
+        assertThat(loadedTasks).isEqualTo(tasks)
+    }
 }
+

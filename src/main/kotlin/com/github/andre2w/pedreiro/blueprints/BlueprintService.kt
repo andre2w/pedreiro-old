@@ -38,6 +38,12 @@ class BlueprintService(
 
     private fun parseEntry(level: String, tree: JsonNode): List<Task> {
 
+        if (tree["type"].asText() == "command") {
+            return listOf(
+                ExecuteCommand(
+                    tree["command"].asText(),
+                    level))
+        }
 
         val path = if (level.isEmpty()) tree.get("name").asText() else level + "/" + tree.get("name").asText()
 
@@ -45,9 +51,7 @@ class BlueprintService(
             return listOf(
                 CreateFile(
                     path,
-                    tree["content"].asText()
-                )
-            )
+                    tree["content"].asText()))
         }
 
         val result = ArrayList<Task>()

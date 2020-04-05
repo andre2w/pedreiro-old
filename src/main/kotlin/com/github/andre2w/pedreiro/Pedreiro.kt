@@ -8,11 +8,13 @@ import com.github.andre2w.pedreiro.configuration.ConfigurationManager
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
+import com.github.andre2w.pedreiro.io.ProcessExecutor
 
 class Pedreiro(
     private val fileSystemHandler: FileSystemHandler,
     private val environment: Environment,
-    private val consoleHandler: ConsoleHandler
+    private val consoleHandler: ConsoleHandler,
+    private val processExecutor: ProcessExecutor
 ) {
 
     fun execute(arguments: Array<String>) {
