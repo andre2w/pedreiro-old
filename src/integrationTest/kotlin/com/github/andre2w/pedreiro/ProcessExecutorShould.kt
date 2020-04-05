@@ -15,10 +15,11 @@ class ProcessExecutorShould {
         val userDir = System.getProperty("user.dir")
         val fileName = "test-${Instant.now()}.txt"
 
-        processExecutor.execute("touch $fileName", userDir)
+        val exitCode = processExecutor.execute("touch $fileName", userDir)
 
         val createdFile = "$userDir/$fileName"
         assertThat(Files.exists(Paths.get(createdFile))).isTrue()
+        assertThat(exitCode).isEqualTo(0)
         Files.delete(Paths.get(createdFile))
     }
 }

@@ -4,11 +4,13 @@ import java.io.File
 
 class ProcessExecutor {
     fun execute(command: String, runFolder: String) : Int {
-        val result = ProcessBuilder()
+        val process = ProcessBuilder()
             .command(command.split(" "))
             .directory(File(runFolder))
             .start()
 
-        return result.exitValue()
+        process.waitFor()
+
+        return process.exitValue()
     }
 }
