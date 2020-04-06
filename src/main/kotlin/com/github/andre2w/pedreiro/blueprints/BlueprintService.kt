@@ -5,6 +5,7 @@ import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.YAMLParser
+import org.yaml.snakeyaml.error.MarkedYAMLException
 
 class BlueprintService(
     private val configuration: PedreiroConfiguration,
@@ -16,13 +17,17 @@ class BlueprintService(
 
     fun loadBlueprint(blueprintName: String) : List<Task> {
         val blueprintPath = "${configuration.blueprintsFolder}/${blueprintName}.yml"
-        val blueprint = fileSystemHandler.readFile(blueprintPath) ?: throw BlueprintNotFound(blueprintPath)
+        val blueprint = fileSystemHandler.readFile(blueprintPath)
+            ?: throw BlueprintParsingException("Failed to load blueprint $blueprintName ($blueprintPath)")
 
         consoleHandler.print("Creating project from blueprint ($blueprintPath)")
 
-        val tree = objectMapper.readTree(blueprint)
-
-        return parseBlueprint(tree)
+        try {
+            val blueprintTree = objectMapper.readTree(blueprint)
+            return parseBlueprint(blueprintTree)
+        } catch (err: MarkedYAMLException) {
+            throw BlueprintParsingException("Failed to load blueprint $blueprintName ($blueprintPath)")
+        }
     }
 
     private fun parseBlueprint(tree: JsonNode) : List<Task> {

@@ -81,7 +81,6 @@ object StartingSimpleProject : Spek({
                     processExecutor.execute(command, "$baseDir/test")
                 }
             }
-
         }
 
         describe("when creating a project from a blueprint that doesn't exists") {
@@ -93,10 +92,25 @@ object StartingSimpleProject : Spek({
             pedreiro.execute(arrayOf(blueprintName))
 
             it("should display message saying that template was not found") {
-                verify { consoleHandler.print("Could not find template $blueprintName ($blueprintPath)") }
+                verify { consoleHandler.print("Failed to load blueprint $blueprintName ($blueprintPath)") }
             }
 
             it("should exit with status code of 1") {
+                verify { consoleHandler.exitWith(1) }
+            }
+        }
+
+        describe("when creating a project from a invalid blueprint") {
+            every { environment.currentDir() } returns baseDir
+            every { environment.userHome() } returns homeDir
+            every { fileSystemHandler.readFile(configurationPath) } returns Fixtures.CONFIGURATION
+            every { fileSystemHandler.readFile(blueprintPath) } returns "INVALID TEMPLATE"
+
+            it("should display message saying that failed to load blueprint") {
+                verify { consoleHandler.print("Failed to load blueprint $blueprintName ($blueprintPath)") }
+            }
+
+            it("should exit with status code 1") {
                 verify { consoleHandler.exitWith(1) }
             }
         }

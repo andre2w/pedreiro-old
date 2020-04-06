@@ -15,13 +15,11 @@ class ConfigurationManagerShould {
         val configurationFile = """
             blueprintsFolder: "$blueprintsFolder"
         """.trimIndent()
-        val configuration =
-            PedreiroConfiguration(blueprintsFolder)
+        val configuration = PedreiroConfiguration(blueprintsFolder)
         val fileSystemHandler = mockk<FileSystemHandler>()
         every { fileSystemHandler.readFile(configFilePath) } returns configurationFile
 
-        val configurationManager =
-            ConfigurationManager(fileSystemHandler)
+        val configurationManager = ConfigurationManager(fileSystemHandler)
         val loadedConfiguration : PedreiroConfiguration = configurationManager.loadConfiguration(configFilePath)
 
         assertThat(loadedConfiguration).isEqualTo(configuration)

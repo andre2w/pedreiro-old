@@ -2,7 +2,7 @@ package com.github.andre2w.pedreiro
 
 import com.github.andre2w.pedreiro.arguments.ArgumentParser
 import com.github.andre2w.pedreiro.arguments.Arguments
-import com.github.andre2w.pedreiro.blueprints.BlueprintNotFound
+import com.github.andre2w.pedreiro.blueprints.BlueprintParsingException
 import com.github.andre2w.pedreiro.blueprints.BlueprintService
 import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
 import com.github.andre2w.pedreiro.configuration.ConfigurationManager
@@ -38,8 +38,8 @@ class Pedreiro(
             build(blueprintService, arguments, scaffoldingService)
             consoleHandler.print("Project created. You can start to work now.")
             consoleHandler.exitWith(0)
-        } catch (err: BlueprintNotFound) {
-            consoleHandler.print("Could not find template ${arguments.blueprintName} (${err.blueprintPath})")
+        } catch (err: BlueprintParsingException) {
+            consoleHandler.print(err.message ?: "Error while parsing blueprint")
             consoleHandler.exitWith(1)
         }
     }

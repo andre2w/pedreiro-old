@@ -119,7 +119,16 @@ class BlueprintServiceShould {
         val blueprintName = "invalidBlueprint"
         every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml")} returns null
 
-        assertThrows<BlueprintNotFound> { blueprintService.loadBlueprint(blueprintName) }
+        assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(blueprintName) }
+    }
+
+    @Test
+    fun `throw exception when template is not valid`() {
+        val blueprintName = "blueprintWithCommand"
+        val blueprint = "\"INVALID:\":\":ASDF:"
+        every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml")} returns blueprint
+
+        assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(blueprintName) }
     }
 }
 
