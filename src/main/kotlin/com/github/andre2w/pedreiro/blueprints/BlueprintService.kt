@@ -1,11 +1,12 @@
 package com.github.andre2w.pedreiro.blueprints
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.dataformat.yaml.JacksonYAMLParseException
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.error.YAMLException
 import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.YAMLParser
-import org.yaml.snakeyaml.error.MarkedYAMLException
 
 class BlueprintService(
     private val configuration: PedreiroConfiguration,
@@ -22,12 +23,12 @@ class BlueprintService(
 
         consoleHandler.print("Creating project from blueprint ($blueprintPath)")
 
-        try {
-            val blueprintTree = objectMapper.readTree(blueprint)
-            return parseBlueprint(blueprintTree)
-        } catch (err: MarkedYAMLException) {
+        val blueprintTree = try {
+            objectMapper.readTree(blueprint)
+        } catch (err: JacksonYAMLParseException) {
             throw BlueprintParsingException("Failed to load blueprint $blueprintName ($blueprintPath)")
         }
+        return parseBlueprint(blueprintTree)
     }
 
     private fun parseBlueprint(tree: JsonNode) : List<Task> {
