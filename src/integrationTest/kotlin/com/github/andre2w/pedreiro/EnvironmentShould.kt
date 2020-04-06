@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class EnvironmentShould {
 
     @Test
-    internal fun `return folder where application was called from`() {
+    fun `return folder where application was called from`() {
         val currentFolder = System.getProperty("user.dir")
 
         val environment = Environment()
@@ -16,7 +16,7 @@ class EnvironmentShould {
     }
 
     @Test
-    internal fun `know where is user home folder`() {
+    fun `know where is user home folder`() {
         val homeFolder = System.getProperty("user.home")
 
         val environment = Environment()

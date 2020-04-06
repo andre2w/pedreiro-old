@@ -10,12 +10,12 @@ class FileSystemHandler {
     }
 
     fun createFile(filePath: String, fileContent: String) {
-        Files.writeString(filePath.toPath(), fileContent)
+        Files.write(filePath.toPath(), fileContent.toByteArray())
     }
 
     fun readFile(filepath: String) : String? {
         return try {
-            Files.readString(filepath.toPath())
+            Files.readAllLines(filepath.toPath()).joinToString(System.lineSeparator())
         } catch (err: NoSuchFileException) {
             null
         }

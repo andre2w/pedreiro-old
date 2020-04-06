@@ -28,15 +28,15 @@ class FileSystemHandlerShould {
     fun `create file with contents`() {
         fileSystemHandler.createFile(filePath, fileContent)
 
-        val readString = Files.readString(path)
+        val readString = String(Files.readAllBytes(path))
         assertThat(readString).isEqualTo(fileContent)
 
         Files.delete(path)
     }
 
     @Test
-    internal fun `read file contents`() {
-        Files.writeString(path, fileContent)
+    fun `read file contents`() {
+        Files.write(path, fileContent.toByteArray())
 
         val readContent = fileSystemHandler.readFile(filePath)
 
@@ -45,7 +45,7 @@ class FileSystemHandlerShould {
     }
 
     @Test
-    internal fun `create folder`() {
+    fun `create folder`() {
         val folderPath = "${System.getProperty("user.dir")}/test-folder-${Instant.now()}"
 
         fileSystemHandler.createFolder(folderPath)
@@ -55,7 +55,7 @@ class FileSystemHandlerShould {
     }
 
     @Test
-    internal fun `return null when file is not found`() {
+    fun `return null when file is not found`() {
         val readContent = fileSystemHandler.readFile(filePath)
 
         assertThat(readContent).isNull()
