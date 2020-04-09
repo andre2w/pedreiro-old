@@ -9,7 +9,8 @@ class ConfigurationManager(private val fileSystemHandler: FileSystemHandler) {
     private val objectMapper = YAMLParser.objectMapper
 
     fun loadConfiguration(configFilePath: String): PedreiroConfiguration {
-        val configuration = fileSystemHandler.readFile(configFilePath) ?: throw ConfigurationNotFound(configFilePath)
+        val configuration = fileSystemHandler.readFile(configFilePath)
+            ?: throw ConfigurationNotFound(configFilePath)
 
         return objectMapper.readValue(configuration)
     }
