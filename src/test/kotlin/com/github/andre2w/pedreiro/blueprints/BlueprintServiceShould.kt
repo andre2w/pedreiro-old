@@ -130,5 +130,7 @@ class BlueprintServiceShould {
 
         assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(blueprintName) }
     }
+
+
 }
 

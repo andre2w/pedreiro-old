@@ -10,6 +10,8 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
     jcenter()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
+
 }
 
 configurations {
@@ -45,12 +47,16 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.11.6'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.3'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.3'
+    implementation 'com.github.jknack:handlebars:4.1.2'
+    compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-cli-jvm', version: '0.2.1'
 
 
     testImplementation "org.junit.jupiter:junit-jupiter:5.6.1"
     acceptanceTestImplementation "org.junit.jupiter:junit-jupiter:5.6.1"
     testImplementation "io.mockk:mockk:1.9.3.kotlin12"
     testImplementation "org.assertj:assertj-core:3.11.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-cli:0.2.1"
+
 
     acceptanceTestImplementation "org.spekframework.spek2:spek-dsl-jvm:$spek_version"
     acceptanceTestImplementation "org.spekframework.spek2:spek-runner-junit5:$spek_version"
