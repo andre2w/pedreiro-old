@@ -1,5 +1,6 @@
 package com.github.andre2w.pedreiro.blueprints
 
+import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
@@ -37,7 +38,7 @@ class BlueprintServiceShould {
         """.trimIndent()
         every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml") } returns blueprint
 
-        val loadedTasks = blueprintService.loadBlueprint(blueprintName)
+        val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
 
         val tasks = listOf(
             CreateFolder("project"),
@@ -62,7 +63,7 @@ class BlueprintServiceShould {
               content: dependencies list""".trimIndent()
         every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml") } returns blueprint
 
-        val loadedTasks = blueprintService.loadBlueprint(blueprintName)
+        val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
 
         val tasks = listOf(
             CreateFolder("project"),
@@ -85,7 +86,7 @@ class BlueprintServiceShould {
         val blueprintPath = "/home/user/.pedreiro/${blueprintName}.yml"
         every { fileSystemHandler.readFile(blueprintPath) } returns blueprint
 
-        blueprintService.loadBlueprint(blueprintName)
+        blueprintService.loadBlueprint(Arguments(blueprintName))
 
         verify {
             consoleHandler.print("Creating project from blueprint ($blueprintPath)")
@@ -105,7 +106,30 @@ class BlueprintServiceShould {
         """.trimIndent()
         every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml")} returns blueprint
 
-        val loadedTasks = blueprintService.loadBlueprint(blueprintName)
+        val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
+
+        val tasks = listOf(
+            CreateFolder("test-command"),
+            ExecuteCommand("gradle init", "test-command")
+        )
+        assertThat(loadedTasks).isEqualTo(tasks)
+    }
+
+    @Test
+    internal fun `parse blueprint with variable`() {
+        val blueprintName = "blueprintWithCommand"
+        val blueprint = """
+            ---
+            - type: folder
+              name: "{{ project_name }}"
+              children:
+                - type: command
+                  command: gradle init
+        """.trimIndent()
+        every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml")} returns blueprint
+
+        val extraArgs = mapOf( "project_name" to "test-command")
+        val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName, extraArgs))
 
         val tasks = listOf(
             CreateFolder("test-command"),
@@ -119,7 +143,7 @@ class BlueprintServiceShould {
         val blueprintName = "invalidBlueprint"
         every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml")} returns null
 
-        assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(blueprintName) }
+        assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(Arguments(blueprintName)) }
     }
 
     @Test
@@ -128,7 +152,7 @@ class BlueprintServiceShould {
         val blueprint = "\"INVALID:\":\":ASDF:"
         every { fileSystemHandler.readFile("/home/user/.pedreiro/${blueprintName}.yml")} returns blueprint
 
-        assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(blueprintName) }
+        assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(Arguments(blueprintName)) }
     }
 
 

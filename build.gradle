@@ -65,7 +65,8 @@ dependencies {
     acceptanceTestImplementation 'com.fasterxml.jackson.core:jackson-databind:2.8.11.6'
     acceptanceTestImplementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.3'
     acceptanceTestImplementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.3'
-
+    acceptanceTestImplementation 'com.github.jknack:handlebars:4.1.2'
+    acceptanceTestImplementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-cli-jvm', version: '0.2.1'
 
     integrationTestImplementation "org.assertj:assertj-core:3.11.1"
     integrationTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
