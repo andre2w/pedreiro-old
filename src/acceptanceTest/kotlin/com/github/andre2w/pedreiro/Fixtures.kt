@@ -51,7 +51,7 @@ object Fixtures {
 
     val BUILD_GRADLE_WITH_VARIABLE = """
         plugins {
-          id 'org.jetbrains.kotlin.jvm' version '1.3.71' 
+          id 'org.jetbrains.kotlin.jvm' version '1.3.71'
         }
         group 'com.test'
         version '1.0-SNAPSHOT'""".trimIndent()
