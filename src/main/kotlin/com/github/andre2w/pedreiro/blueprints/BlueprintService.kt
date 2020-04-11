@@ -26,11 +26,7 @@ class BlueprintService(
 
     fun loadBlueprint(arguments: Arguments) : List<Task> {
         val blueprintPath = "${configuration.blueprintsFolder}/${arguments.blueprintName}.yml"
-        val blueprintTemplate = readBlueprint(blueprintPath, arguments.blueprintName)
-
-        val blueprint = handlebars
-            .compileInline(blueprintTemplate)
-            .apply(arguments.extraArgs)
+        val blueprint = readBlueprint(blueprintPath, arguments)
 
         consoleHandler.print("Creating project from blueprint ($blueprintPath)")
 
@@ -43,61 +39,62 @@ class BlueprintService(
         return parseBlueprint(blueprintTree)
     }
 
-    private fun readBlueprint(blueprintPath: String, blueprintName: String): String =
-        fileSystemHandler.readFile(blueprintPath)
-            ?: throw BlueprintParsingException("Failed to load blueprint $blueprintName ($blueprintPath)")
+    private fun readBlueprint(blueprintPath: String, arguments: Arguments): String {
+        val blueprintTemplate = fileSystemHandler.readFile(blueprintPath)
+            ?: throw BlueprintParsingException("Failed to load blueprint ${arguments.blueprintName} ($blueprintPath)")
 
-    private fun parseBlueprint(node: JsonNode) : List<Task> {
-        val result = ArrayList<Task>()
-        when {
-            node.isArray -> node.forEach { node -> result.addAll(parseBlueprint(node)) }
-            else -> {
-                when (val parsedEntry = parseEntry("", node)) {
-                    is ParseResult.Many -> result.addAll(parsedEntry.tasks)
-                    is ParseResult.Single -> result.add(parsedEntry.task)
-                }
-            }
-        }
-        return result
+        return handlebars
+            .compileInline(blueprintTemplate)
+            .apply(arguments.extraArgs)
     }
 
-    private fun parseEntry(level: String, node: JsonNode): ParseResult {
-        return when (node["type"].asText()) {
-            "command" -> parseCommand(node, level)
-            "file"    -> parseCreateFile(normalizePath(level, node), node)
+    private fun parseBlueprint(node: JsonNode, level: List<String> = ArrayList()) : List<Task> {
+
+
+        if (node.isArray) {
+            return parseList(node, level)
+        }
+
+        val result = ArrayList<Task>()
+        val parsedResult =  when (node["type"].asText()) {
+            "command" -> parseCommand(level.asPath(), node)
+            "file"    -> parseCreateFile(level.asPath() , node)
             "folder"  -> parseCreateFolder(level, node)
             else -> throw BlueprintParsingException("Invalid type of ${node["type"].asText()}")
         }
+
+        when (parsedResult) {
+            is ParseResult.Many -> result.addAll(parsedResult.tasks)
+            is ParseResult.Single -> result.add(parsedResult.task)
+        }
+
+        return result
     }
 
+    private fun parseList(nodes: JsonNode, level: List<String>): List<Task> =
+        nodes.flatMap { node -> parseBlueprint(node, level) }
 
-
-    private fun parseCreateFolder(level: String, node: JsonNode) : ParseResult.Many {
+    private fun parseCreateFolder(level: List<String>, node: JsonNode) : ParseResult.Many {
         val result = ArrayList<Task>()
 
+        val currentLevel = level + node["name"].asText()
 
-        result.add(CreateFolder(normalizePath(level, node)))
+        result.add(CreateFolder(currentLevel.asPath()))
 
-        node["children"]?.forEach { child ->
-            when (val parseResult = parseEntry(normalizePath(level, node), child)) {
-                is ParseResult.Single -> result.add(parseResult.task)
-                is ParseResult.Many -> result.addAll(parseResult.tasks)
-            }
+        node["children"]?.let { children ->
+            result.addAll(parseList(children, currentLevel))
         }
 
         return ParseResult.Many(result)
     }
 
-    private fun normalizePath(level: String, node: JsonNode): String {
-        return if (level.isEmpty()) node.get("name").asText() else level + "/" + node.get("name").asText()
-    }
-
     private fun parseCreateFile(path: String, node: JsonNode): ParseResult.Single {
-        return ParseResult.Single(CreateFile(path, node["content"].asText()))
+        return ParseResult.Single(CreateFile(path + "/" + node["name"].asText(), node["content"].asText()))
     }
 
-    private fun parseCommand(node: JsonNode, path: String): ParseResult.Single {
+    private fun parseCommand(path: String, node: JsonNode): ParseResult.Single {
         return ParseResult.Single(ExecuteCommand(node["command"].asText(), path))
     }
 
+    private fun List<String>.asPath() = this.joinToString("/")
 }
