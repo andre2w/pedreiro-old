@@ -18,7 +18,7 @@ class Pedreiro(
     private val processExecutor: ProcessExecutor
 ) {
 
-    fun execute(arguments: Array<String>) {
+    fun execute(args: Array<String>) {
         consoleHandler.print("Setting up Pedreiro toolbox")
 
         val argumentParser = ArgumentParser()
@@ -32,7 +32,7 @@ class Pedreiro(
 
         val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor)
 
-        val arguments = argumentParser.parse(arguments)
+        val arguments = argumentParser.parse(args)
 
         try {
             build(blueprintService, arguments, scaffoldingService)
@@ -45,7 +45,7 @@ class Pedreiro(
     }
 
     private fun build(blueprintService: BlueprintService, arguments: Arguments, scaffoldingService: ScaffoldingService) {
-        val tasks = blueprintService.loadBlueprint(arguments.blueprintName)
+        val tasks = blueprintService.loadBlueprint(arguments)
         scaffoldingService.executeTasks(tasks)
     }
 

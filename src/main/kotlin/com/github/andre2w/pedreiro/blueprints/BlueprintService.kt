@@ -2,10 +2,12 @@ package com.github.andre2w.pedreiro.blueprints
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.yaml.JacksonYAMLParseException
+import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.YAMLParser
+import com.github.jknack.handlebars.Handlebars
 
 class BlueprintService(
     private val configuration: PedreiroConfiguration,
@@ -18,18 +20,24 @@ class BlueprintService(
         data class Many(val tasks: List<Task>) : ParseResult()
     }
 
+    private val handlebars = Handlebars()
+
     private val objectMapper = YAMLParser.objectMapper
 
-    fun loadBlueprint(blueprintName: String) : List<Task> {
-        val blueprintPath = "${configuration.blueprintsFolder}/${blueprintName}.yml"
-        val blueprint = readBlueprint(blueprintPath, blueprintName)
+    fun loadBlueprint(arguments: Arguments) : List<Task> {
+        val blueprintPath = "${configuration.blueprintsFolder}/${arguments.blueprintName}.yml"
+        val blueprintTemplate = readBlueprint(blueprintPath, arguments.blueprintName)
+
+        val blueprint = handlebars
+            .compileInline(blueprintTemplate)
+            .apply(arguments.extraArgs)
 
         consoleHandler.print("Creating project from blueprint ($blueprintPath)")
 
         val blueprintTree = try {
             objectMapper.readTree(blueprint)
         } catch (err: JacksonYAMLParseException) {
-            throw BlueprintParsingException("Failed to load blueprint $blueprintName ($blueprintPath)")
+            throw BlueprintParsingException("Failed to load blueprint ${arguments.blueprintName} ($blueprintPath)")
         }
 
         return parseBlueprint(blueprintTree)
@@ -62,8 +70,11 @@ class BlueprintService(
         }
     }
 
+
+
     private fun parseCreateFolder(level: String, node: JsonNode) : ParseResult.Many {
         val result = ArrayList<Task>()
+
 
         result.add(CreateFolder(normalizePath(level, node)))
 

@@ -9,7 +9,7 @@ class BuildService(
 {
 
     fun build(arguments: Arguments) {
-        val tasks = blueprintService.loadBlueprint(arguments.blueprintName)
+        val tasks = blueprintService.loadBlueprint(arguments)
         scaffoldingService.executeTasks(tasks)
     }
 }
