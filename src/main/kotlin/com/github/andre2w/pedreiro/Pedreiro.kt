@@ -26,7 +26,7 @@ class Pedreiro(
         val configurationManager = ConfigurationManager(fileSystemHandler)
 
         val pedreiroConfiguration =
-            configurationManager.loadConfiguration(environment.userHome() + "/.pedreiro/configuration.yml")
+            configurationManager.loadFrom(environment.userHome() + "/.pedreiro/configuration.yml")
 
         val blueprintService = BlueprintService(pedreiroConfiguration, fileSystemHandler, consoleHandler)
 
@@ -45,8 +45,8 @@ class Pedreiro(
     }
 
     private fun build(blueprintService: BlueprintService, arguments: Arguments, scaffoldingService: ScaffoldingService) {
-        val tasks = blueprintService.loadBlueprint(arguments)
-        scaffoldingService.executeTasks(tasks.tasks)
+        val blueprint = blueprintService.loadBlueprint(arguments)
+        scaffoldingService.executeTasks(blueprint)
     }
 
 }

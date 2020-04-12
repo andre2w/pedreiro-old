@@ -153,7 +153,6 @@ class BlueprintServiceShould {
         assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(Arguments(blueprintName)) }
     }
 
-    private fun Blueprint.Companion.from(vararg tasks: Task) =
-        Blueprint(tasks.asList())
+
 }
 

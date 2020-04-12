@@ -21,7 +21,7 @@ class ConfigurationManagerShould {
         every { fileSystemHandler.readFile(configFilePath) } returns configurationFile
 
         val configurationManager = ConfigurationManager(fileSystemHandler)
-        val loadedConfiguration : PedreiroConfiguration = configurationManager.loadConfiguration(configFilePath)
+        val loadedConfiguration : PedreiroConfiguration = configurationManager.loadFrom(configFilePath)
 
         assertThat(loadedConfiguration).isEqualTo(configuration)
     }
@@ -35,7 +35,7 @@ class ConfigurationManagerShould {
         val configurationManager = ConfigurationManager(fileSystemHandler)
 
         assertThrows<ConfigurationNotFound> {
-           configurationManager.loadConfiguration(configFilePath)
+           configurationManager.loadFrom(configFilePath)
         }
     }
 }
