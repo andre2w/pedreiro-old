@@ -49,8 +49,6 @@ class BlueprintService(
     }
 
     private fun parseBlueprint(node: JsonNode, level: List<String> = ArrayList()) : List<Task> {
-
-
         if (node.isArray) {
             return parseList(node, level)
         }

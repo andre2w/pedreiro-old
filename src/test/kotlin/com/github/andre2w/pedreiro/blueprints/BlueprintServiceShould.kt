@@ -1,13 +1,9 @@
 package com.github.andre2w.pedreiro.blueprints
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
-import com.github.andre2w.pedreiro.io.BlueprintDeserializer
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.YAMLParser
@@ -101,7 +97,7 @@ class BlueprintServiceShould {
     }
 
     @Test
-    internal fun `parse blueprint with command`() {
+    fun `parse blueprint with command`() {
         val blueprintName = "blueprintWithCommand"
         val blueprint = """
             ---
@@ -123,7 +119,7 @@ class BlueprintServiceShould {
     }
 
     @Test
-    internal fun `parse blueprint with variable`() {
+    fun `parse blueprint with variable`() {
         val blueprintName = "blueprintWithCommand"
         val blueprint = """
             ---
@@ -161,48 +157,5 @@ class BlueprintServiceShould {
 
         assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(Arguments(blueprintName)) }
     }
-
-    @Test
-    internal fun `deserialize file type`() {
-        val blueprint = """
-            ---
-            - type: file
-              name: test.txt
-              content: Im a text file
-        """.trimIndent()
-
-        val objectMapper = YAMLParser.objectMapper.registerModule(
-            SimpleModule().addDeserializer(Blueprint::class.java, BlueprintDeserializer(Blueprint::class.java))
-        )
-
-        val parsedBlueprint = objectMapper.readValue<Blueprint>(blueprint)
-
-        val expectedBlueprint = Blueprint(
-            listOf(CreateFile("test.txt", "Im a text file"))
-        )
-        assertThat(parsedBlueprint).isEqualTo(expectedBlueprint)
-    }
-
-    @Test
-    fun `deserialize folder type`() {
-        val blueprint = """
-            ---
-            - type: folder
-              name: test
-        """.trimIndent()
-
-        val objectMapper = YAMLParser.objectMapper.registerModule(
-            SimpleModule().addDeserializer(Blueprint::class.java, BlueprintDeserializer(Blueprint::class.java))
-        )
-
-        val parsedBlueprint = objectMapper.readValue<Blueprint>(blueprint)
-
-        val expectedBlueprint = Blueprint(
-            listOf(CreateFolder("test"))
-        )
-        assertThat(parsedBlueprint).isEqualTo(expectedBlueprint)
-    }
-
-
 }
 
