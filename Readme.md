@@ -55,7 +55,7 @@ This is a example of starting a simple Kotlin project with gradle.
             kotlinOptions.jvmTarget = "1.8"
         }
 
-		
+  
     - type: command
       command: graddle wrapper
 
