@@ -3,7 +3,6 @@ package com.github.andre2w.pedreiro.blueprints
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.yaml.JacksonYAMLParseException
 import com.github.andre2w.pedreiro.arguments.Arguments
-import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.YAMLParser
@@ -13,16 +12,9 @@ sealed class ParseResult {
     data class Many(val tasks: List<Task>) : ParseResult()
 }
 
-class BlueprintService(
-    configuration: PedreiroConfiguration,
-    fileSystemHandler: FileSystemHandler,
-    consoleHandler: ConsoleHandler
-) {
+class BlueprintService(private val blueprintReader: BlueprintReader) {
 
     private val objectMapper = YAMLParser.objectMapper
-
-    private val blueprintReader = BlueprintReader(fileSystemHandler, configuration, consoleHandler)
-
 
     fun loadBlueprint(arguments: Arguments) : Blueprint {
 

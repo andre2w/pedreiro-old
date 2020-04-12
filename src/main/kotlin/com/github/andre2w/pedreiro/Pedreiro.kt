@@ -3,6 +3,7 @@ package com.github.andre2w.pedreiro
 import com.github.andre2w.pedreiro.arguments.ArgumentParser
 import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.blueprints.BlueprintParsingException
+import com.github.andre2w.pedreiro.blueprints.BlueprintReader
 import com.github.andre2w.pedreiro.blueprints.BlueprintService
 import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
 import com.github.andre2w.pedreiro.configuration.ConfigurationManager
@@ -28,7 +29,9 @@ class Pedreiro(
         val pedreiroConfiguration =
             configurationManager.loadFrom(environment.userHome() + "/.pedreiro/configuration.yml")
 
-        val blueprintService = BlueprintService(pedreiroConfiguration, fileSystemHandler, consoleHandler)
+        val blueprintReader = BlueprintReader(fileSystemHandler, pedreiroConfiguration, consoleHandler)
+
+        val blueprintService = BlueprintService(blueprintReader)
 
         val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor)
 
