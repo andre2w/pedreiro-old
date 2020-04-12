@@ -40,13 +40,13 @@ class BlueprintServiceShould {
 
         val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
 
-        val tasks = Blueprint(listOf(
+        val tasks = Blueprint.from(
             CreateFolder("project"),
             CreateFolder("project/src"),
             CreateFolder("project/src/main"),
             CreateFolder("project/src/main/kotlin"),
             CreateFolder("project/src/main/resources")
-        ))
+        )
 
         assertThat(loadedTasks).isEqualTo(tasks)
     }
@@ -65,10 +65,10 @@ class BlueprintServiceShould {
 
         val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
 
-        val tasks = Blueprint(listOf(
+        val tasks = Blueprint.from(
             CreateFolder("project"),
             CreateFile("project/build.gradle", "dependencies list")
-        ))
+        )
 
         assertThat(loadedTasks).isEqualTo(tasks)
     }
@@ -105,10 +105,10 @@ class BlueprintServiceShould {
 
         val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
 
-        val tasks = Blueprint(listOf(
+        val tasks = Blueprint.from(
             CreateFolder("test-command"),
             ExecuteCommand("gradle init", "test-command")
-        ))
+        )
 
         assertThat(loadedTasks).isEqualTo(tasks)
     }
@@ -129,10 +129,10 @@ class BlueprintServiceShould {
         val extraArgs = mapOf( "project_name" to "test-command")
         val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName, extraArgs))
 
-        val tasks = Blueprint(listOf(
+        val tasks = Blueprint.from(
             CreateFolder("test-command"),
             ExecuteCommand("gradle init", "test-command")
-        ))
+        )
         assertThat(loadedTasks).isEqualTo(tasks)
     }
 
@@ -152,5 +152,8 @@ class BlueprintServiceShould {
 
         assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(Arguments(blueprintName)) }
     }
+
+    private fun Blueprint.Companion.from(vararg tasks: Task) =
+        Blueprint(tasks.asList())
 }
 

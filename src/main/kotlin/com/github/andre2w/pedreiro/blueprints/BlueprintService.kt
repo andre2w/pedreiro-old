@@ -26,18 +26,16 @@ class BlueprintService(
 
     fun loadBlueprint(arguments: Arguments) : Blueprint {
 
-        val blueprint = blueprintReader.read(arguments)
-
-        val blueprintTree = try {
-            objectMapper.readTree(blueprint)
+        val blueprint = try {
+            objectMapper.readTree(blueprintReader.read(arguments))
         } catch (err: JacksonYAMLParseException) {
             throw BlueprintParsingException("Failed to parse blueprint ${arguments.blueprintName}")
         }
 
-        return Blueprint(parseBlueprint(blueprintTree))
+        return Blueprint.from(parse(blueprint))
     }
 
-    private fun parseBlueprint(node: JsonNode, level: List<String> = ArrayList()) : List<Task> {
+    private fun parse(node: JsonNode, level: List<String> = ArrayList()) : List<Task> {
         if (node.isArray) {
             return parseList(node, level)
         }
@@ -59,7 +57,7 @@ class BlueprintService(
     }
 
     private fun parseList(nodes: JsonNode, level: List<String>): List<Task> =
-        nodes.flatMap { node -> parseBlueprint(node, level) }
+        nodes.flatMap { node -> parse(node, level) }
 
     private fun parseCreateFolder(level: List<String>, node: JsonNode) : ParseResult.Many {
         val result = ArrayList<Task>()
