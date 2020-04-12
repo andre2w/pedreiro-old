@@ -10,6 +10,6 @@ class BuildService(
 
     fun build(arguments: Arguments) {
         val tasks = blueprintService.loadBlueprint(arguments)
-        scaffoldingService.executeTasks(tasks)
+        scaffoldingService.executeTasks(tasks.tasks)
     }
 }

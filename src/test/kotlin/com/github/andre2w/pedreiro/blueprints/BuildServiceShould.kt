@@ -20,7 +20,7 @@ class BuildServiceShould {
         )
         val blueprintName = "baseTemplate"
         val args = Arguments(blueprintName)
-        every { blueprintService.loadBlueprint(args) } returns tasks
+        every { blueprintService.loadBlueprint(args) } returns Blueprint(tasks)
 
         val buildService =
             BuildService(blueprintService, scaffoldingService)

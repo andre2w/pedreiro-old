@@ -1,12 +1,9 @@
 package com.github.andre2w.pedreiro.blueprints
 
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
-import com.github.andre2w.pedreiro.io.YAMLParser
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -43,13 +40,13 @@ class BlueprintServiceShould {
 
         val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
 
-        val tasks = listOf(
+        val tasks = Blueprint(listOf(
             CreateFolder("project"),
             CreateFolder("project/src"),
             CreateFolder("project/src/main"),
             CreateFolder("project/src/main/kotlin"),
             CreateFolder("project/src/main/resources")
-        )
+        ))
 
         assertThat(loadedTasks).isEqualTo(tasks)
     }
@@ -68,13 +65,10 @@ class BlueprintServiceShould {
 
         val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
 
-        val tasks = listOf(
+        val tasks = Blueprint(listOf(
             CreateFolder("project"),
-            CreateFile(
-                "project/build.gradle",
-                "dependencies list"
-            )
-        )
+            CreateFile("project/build.gradle", "dependencies list")
+        ))
 
         assertThat(loadedTasks).isEqualTo(tasks)
     }
@@ -111,10 +105,11 @@ class BlueprintServiceShould {
 
         val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName))
 
-        val tasks = listOf(
+        val tasks = Blueprint(listOf(
             CreateFolder("test-command"),
             ExecuteCommand("gradle init", "test-command")
-        )
+        ))
+
         assertThat(loadedTasks).isEqualTo(tasks)
     }
 
@@ -134,10 +129,10 @@ class BlueprintServiceShould {
         val extraArgs = mapOf( "project_name" to "test-command")
         val loadedTasks = blueprintService.loadBlueprint(Arguments(blueprintName, extraArgs))
 
-        val tasks = listOf(
+        val tasks = Blueprint(listOf(
             CreateFolder("test-command"),
             ExecuteCommand("gradle init", "test-command")
-        )
+        ))
         assertThat(loadedTasks).isEqualTo(tasks)
     }
 

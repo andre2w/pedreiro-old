@@ -24,7 +24,7 @@ class BlueprintService(
     private val blueprintReader = BlueprintReader(fileSystemHandler, configuration, consoleHandler)
 
 
-    fun loadBlueprint(arguments: Arguments) : List<Task> {
+    fun loadBlueprint(arguments: Arguments) : Blueprint {
 
         val blueprint = blueprintReader.read(arguments)
 
@@ -34,7 +34,7 @@ class BlueprintService(
             throw BlueprintParsingException("Failed to parse blueprint ${arguments.blueprintName}")
         }
 
-        return parseBlueprint(blueprintTree)
+        return Blueprint(parseBlueprint(blueprintTree))
     }
 
     private fun parseBlueprint(node: JsonNode, level: List<String> = ArrayList()) : List<Task> {
