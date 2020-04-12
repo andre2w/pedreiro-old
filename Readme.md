@@ -158,6 +158,21 @@ When calling the application you can pass how many values using the `-a` or `--a
 pedreiro test -a "project_name=pedeiro" --arg "group=com.github.andre2w"
 ```
 
+## Configuration
+
+To application will look for the `configuration.yml` file in a folder called `.pedreiro` in your home dir. 
+The configuration file must contain where the application will look for the blueprints. 
+
+Example:
+
+```yaml
+# ~/andre/.pedreiro./configuration.yml
+---
+blueprintsFolder: /Users/andre/.pedreiro/blueprints
+```
+
+Right now you must create the folder and add the configuration file there manually.
+
 ## Building
 
 To build the project you can clone and execute `./gradlew sJ`, this will generate a fat jar with all the dependencies inside `build/libs`. 
