@@ -46,7 +46,7 @@ class Pedreiro(
 
     private fun build(blueprintService: BlueprintService, arguments: Arguments, scaffoldingService: ScaffoldingService) {
         val blueprint = blueprintService.loadBlueprint(arguments)
-        scaffoldingService.executeTasks(blueprint)
+        scaffoldingService.execute(blueprint)
     }
 
 }

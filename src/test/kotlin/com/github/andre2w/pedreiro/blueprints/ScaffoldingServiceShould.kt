@@ -29,11 +29,11 @@ class ScaffoldingServiceShould {
     fun `create a folder in current location`() {
         every { environment.currentDir() } returns baseDir
 
-        val tasks = Blueprint.from(
+        val blueprint = Blueprint.from(
             CreateFolder("pedreiro"),
             CreateFolder("pedreiro/src")
         )
-        scaffoldingService.executeTasks(tasks)
+        scaffoldingService.execute(blueprint)
 
         verify {
             fileSystemHandler.createFolder("/home/user/projects/pedreiro")
@@ -50,7 +50,7 @@ class ScaffoldingServiceShould {
         )
 
 
-        scaffoldingService.executeTasks(tasks)
+        scaffoldingService.execute(tasks)
 
         verify {
             fileSystemHandler.createFolder("/home/user/projects/pedreiro")
@@ -66,7 +66,7 @@ class ScaffoldingServiceShould {
         every { environment.currentDir() } returns baseDir
         every { processExecutor.execute(command, "/home/user/projects/pedreiro") } returns 0
 
-        scaffoldingService.executeTasks(tasks)
+        scaffoldingService.execute(tasks)
 
         verify { processExecutor.execute(command, "/home/user/projects/pedreiro") }
     }

@@ -9,7 +9,7 @@ class ScaffoldingService(
     private val environment: Environment,
     private val processExecutor: ProcessExecutor
 ) {
-    fun executeTasks(blueprint: Blueprint) {
+    fun execute(blueprint: Blueprint) {
         val currentDir = environment.currentDir()
 
         blueprint.tasks.forEach { task -> executeTask(task, currentDir) }
