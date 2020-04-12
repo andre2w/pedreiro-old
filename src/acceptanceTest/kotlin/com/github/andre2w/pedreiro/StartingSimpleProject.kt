@@ -92,7 +92,7 @@ object StartingSimpleProject : Spek({
             pedreiro.execute(arrayOf(blueprintName))
 
             it("should display message saying that template was not found") {
-                verify { consoleHandler.print("Failed to load blueprint $blueprintName ($blueprintPath)") }
+                verify { consoleHandler.print("Failed to read blueprint $blueprintName ($blueprintPath)") }
             }
 
             it("should exit with status code of 1") {
@@ -107,7 +107,7 @@ object StartingSimpleProject : Spek({
             every { fileSystemHandler.readFile(blueprintPath) } returns "INVALID TEMPLATE"
 
             it("should display message saying that failed to load blueprint") {
-                verify { consoleHandler.print("Failed to load blueprint $blueprintName ($blueprintPath)") }
+                verify { consoleHandler.print("Failed to read blueprint $blueprintName ($blueprintPath)") }
             }
 
             it("should exit with status code 1") {

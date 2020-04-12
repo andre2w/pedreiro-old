@@ -7,45 +7,34 @@ import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.YAMLParser
-import com.github.jknack.handlebars.Handlebars
+
+sealed class ParseResult {
+    data class Single(val task: Task) : ParseResult()
+    data class Many(val tasks: List<Task>) : ParseResult()
+}
 
 class BlueprintService(
-    private val configuration: PedreiroConfiguration,
-    private val fileSystemHandler: FileSystemHandler,
-    private val consoleHandler: ConsoleHandler
+    configuration: PedreiroConfiguration,
+    fileSystemHandler: FileSystemHandler,
+    consoleHandler: ConsoleHandler
 ) {
-
-    sealed class ParseResult {
-        data class Single(val task: Task) : ParseResult()
-        data class Many(val tasks: List<Task>) : ParseResult()
-    }
-
-    private val handlebars = Handlebars()
 
     private val objectMapper = YAMLParser.objectMapper
 
-    fun loadBlueprint(arguments: Arguments) : List<Task> {
-        val blueprintPath = "${configuration.blueprintsFolder}/${arguments.blueprintName}.yml"
-        val blueprint = readBlueprint(blueprintPath, arguments)
+    private val blueprintReader = BlueprintReader(fileSystemHandler, configuration, consoleHandler)
 
-        consoleHandler.print("Creating project from blueprint ($blueprintPath)")
+
+    fun loadBlueprint(arguments: Arguments) : List<Task> {
+
+        val blueprint = blueprintReader.read(arguments)
 
         val blueprintTree = try {
             objectMapper.readTree(blueprint)
         } catch (err: JacksonYAMLParseException) {
-            throw BlueprintParsingException("Failed to load blueprint ${arguments.blueprintName} ($blueprintPath)")
+            throw BlueprintParsingException("Failed to parse blueprint ${arguments.blueprintName}")
         }
 
         return parseBlueprint(blueprintTree)
-    }
-
-    private fun readBlueprint(blueprintPath: String, arguments: Arguments): String {
-        val blueprintTemplate = fileSystemHandler.readFile(blueprintPath)
-            ?: throw BlueprintParsingException("Failed to load blueprint ${arguments.blueprintName} ($blueprintPath)")
-
-        return handlebars
-            .compileInline(blueprintTemplate)
-            .apply(arguments.extraArgs)
     }
 
     private fun parseBlueprint(node: JsonNode, level: List<String> = ArrayList()) : List<Task> {

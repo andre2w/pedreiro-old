@@ -10,12 +10,16 @@ class ScaffoldingService(
     private val processExecutor: ProcessExecutor
 ) {
     fun executeTasks(tasks: List<Task>) {
-        tasks.forEach { task ->
-            when (task) {
-                is CreateFolder -> fileSystemHandler.createFolder("${environment.currentDir()}/${task.path}")
-                is CreateFile -> fileSystemHandler.createFile("${environment.currentDir()}/${task.path}", task.content)
-                is ExecuteCommand -> processExecutor.execute(task.parsedCommand, "${environment.currentDir()}/${task.folder}")
-            }
+        val currentDir = environment.currentDir()
+
+        tasks.forEach { task -> executeTask(task, currentDir) }
+    }
+
+    private fun executeTask(task: Task, currentDir: String) {
+        when (task) {
+            is CreateFolder -> fileSystemHandler.createFolder("$currentDir/${task.path}")
+            is CreateFile -> fileSystemHandler.createFile("$currentDir/${task.path}", task.content)
+            is ExecuteCommand -> processExecutor.execute(task.parsedCommand, "$currentDir/${task.folder}")
         }
     }
 }
