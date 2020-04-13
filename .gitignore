@@ -2,3 +2,6 @@
 out/
 .gradle/
 build/
+pedreiro.iml
+pedreiro.ipr
+pedreiro.iws
