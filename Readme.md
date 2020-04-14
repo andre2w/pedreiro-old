@@ -57,13 +57,14 @@ This is a example of starting a simple Kotlin project with gradle.
 
   
     - type: command
-      command: graddle wrapper
+      command: gradle wrapper
 
     - type: command
       command: git init
-
     - type: command
-      command: git commit -a -m "Initial Commit"
+      command: git add .
+    - type: command
+      command: git commit -m "Initial Commit"
 ```
 
 And finally we can run the template with the command:
