@@ -43,7 +43,7 @@ object StartingSimpleProject : Spek({
                }
             }
 
-            it ("should print print information about template creation and when its done") {
+            it ("should print information about template creation and when its done") {
                 verify {
                     consoleHandler.print("Creating project from blueprint ($blueprintPath)")
                     consoleHandler.print("Project created. You can start to work now.")
@@ -88,11 +88,12 @@ object StartingSimpleProject : Spek({
             every { environment.userHome() } returns homeDir
             every { fileSystemHandler.readFile(configurationPath) } returns Fixtures.CONFIGURATION
             every { fileSystemHandler.readFile(blueprintPath) } returns null
+            every { fileSystemHandler.readFile("$homeDir/.pedreiro/blueprints/${blueprintName}.yaml") } returns null
 
             pedreiro.execute(arrayOf(blueprintName))
 
             it("should display message saying that template was not found") {
-                verify { consoleHandler.print("Failed to read blueprint $blueprintName ($blueprintPath)") }
+                verify { consoleHandler.print("Failed to read blueprint $blueprintName") }
             }
 
             it("should exit with status code of 1") {
@@ -107,7 +108,7 @@ object StartingSimpleProject : Spek({
             every { fileSystemHandler.readFile(blueprintPath) } returns "INVALID TEMPLATE"
 
             it("should display message saying that failed to load blueprint") {
-                verify { consoleHandler.print("Failed to read blueprint $blueprintName ($blueprintPath)") }
+                verify { consoleHandler.print("Failed to read blueprint $blueprintName") }
             }
 
             it("should exit with status code 1") {

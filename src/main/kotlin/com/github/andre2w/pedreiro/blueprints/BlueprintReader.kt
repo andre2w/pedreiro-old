@@ -17,15 +17,21 @@ class BlueprintReader(
     fun read(arguments: Arguments): String {
         val blueprintPath = "${configuration.blueprintsFolder}/${arguments.blueprintName}"
 
-        val blueprintTemplate = fileSystemHandler.readFile("$blueprintPath.yml")
-            ?: fileSystemHandler.readFile("$blueprintPath.yaml")
-            ?: throw BlueprintParsingException("Failed to read blueprint ${arguments.blueprintName} ($blueprintPath)")
-
-        consoleHandler.print("Creating project from blueprint ($blueprintPath)")
+        val blueprintTemplate = readFile("$blueprintPath.yml")
+            ?: readFile("$blueprintPath.yaml")
+            ?: throw BlueprintParsingException("Failed to read blueprint ${arguments.blueprintName}")
 
         return handlebars
             .compileInline(blueprintTemplate)
             .apply(arguments.extraArgs)
+    }
+
+    private fun readFile(blueprintPath: String) : String? {
+        val blueprint = fileSystemHandler.readFile(blueprintPath)
+        if (blueprint != null) {
+            consoleHandler.print("Creating project from blueprint ($blueprintPath)")
+        }
+        return blueprint
     }
 
 }
