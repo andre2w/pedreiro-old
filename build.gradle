@@ -4,7 +4,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
-group 'org.example'
+group 'com.github.andre2w'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -130,7 +130,7 @@ idea {
 
 jar {
     manifest {
-        attributes('Main-Class': 'com.github.andre2w.pedreiro.Main')
+        attributes('Main-Class': 'com.github.andre2w.pedreiro.Runner')
     }
 }
 

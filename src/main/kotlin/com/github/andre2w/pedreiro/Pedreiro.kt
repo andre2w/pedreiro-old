@@ -2,10 +2,7 @@ package com.github.andre2w.pedreiro
 
 import com.github.andre2w.pedreiro.arguments.ArgumentParser
 import com.github.andre2w.pedreiro.arguments.Arguments
-import com.github.andre2w.pedreiro.blueprints.BlueprintParsingException
-import com.github.andre2w.pedreiro.blueprints.BlueprintReader
-import com.github.andre2w.pedreiro.blueprints.BlueprintService
-import com.github.andre2w.pedreiro.blueprints.ScaffoldingService
+import com.github.andre2w.pedreiro.blueprints.*
 import com.github.andre2w.pedreiro.configuration.ConfigurationManager
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.Environment
@@ -33,7 +30,7 @@ class Pedreiro(
 
         val blueprintService = BlueprintService(blueprintReader)
 
-        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor)
+        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor, CommandParser())
 
         val arguments = argumentParser.parse(args)
 
@@ -47,7 +44,11 @@ class Pedreiro(
         }
     }
 
-    private fun build(blueprintService: BlueprintService, arguments: Arguments, scaffoldingService: ScaffoldingService) {
+    private fun build(
+        blueprintService: BlueprintService,
+        arguments: Arguments,
+        scaffoldingService: ScaffoldingService
+    ) {
         val blueprint = blueprintService.loadBlueprint(arguments)
         scaffoldingService.execute(blueprint)
     }

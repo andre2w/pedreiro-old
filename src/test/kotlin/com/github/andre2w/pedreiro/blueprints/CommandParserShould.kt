@@ -3,7 +3,9 @@ package com.github.andre2w.pedreiro.blueprints
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ExecuteCommandShould {
+class CommandParserShould {
+
+    private val commandParser = CommandParser()
 
     @Test
     fun `parse command to list of arguments`() {
@@ -23,59 +25,58 @@ class ExecuteCommandShould {
         )
         val command = expectedCommand.joinToString(" ")
 
-        val executeCommand = ExecuteCommand(command, "")
-        val parsedCommand = executeCommand.parsedCommand
+        val parsedCommand = commandParser.parseCommand(command)
 
         assertThat(parsedCommand).isEqualTo(expectedCommand)
     }
 
     @Test
     fun `parse command with multiple words string enclosed with double quote as argument`() {
-        val executeCommand = ExecuteCommand("echo \"test argument parsing\"", "")
-        val parsedCommand = executeCommand.parsedCommand
+        val command = "echo \"test argument parsing\""
+
+        val parsedCommand = commandParser.parseCommand(command)
 
         val expectedCommand = listOf("echo", "test argument parsing")
-
         assertThat(parsedCommand).isEqualTo(expectedCommand)
     }
 
     @Test
     fun `parse command with multiple words string enclosed with single quote as argument`() {
-        val executeCommand = ExecuteCommand("echo \'test argument parsing\'", "")
-        val parsedCommand = executeCommand.parsedCommand
+        val command = "echo \'test argument parsing\'"
+
+        val parsedCommand = commandParser.parseCommand(command)
 
         val expectedCommand = listOf("echo", "test argument parsing")
-
         assertThat(parsedCommand).isEqualTo(expectedCommand)
     }
 
     @Test
     fun `parse command with escaped quote`() {
-        val executeCommand = ExecuteCommand("echo \'there\\'s a quote in this argument\'", "")
-        val parsedCommand = executeCommand.parsedCommand
+        val command = "echo \'there\\'s a quote in this argument\'"
+
+        val parsedCommand = commandParser.parseCommand(command)
 
         val expectedCommand = listOf("echo", "there\'s a quote in this argument")
-
         assertThat(parsedCommand).isEqualTo(expectedCommand)
     }
 
     @Test
     fun `parse command with nested quotes`() {
-        val executeCommand = ExecuteCommand("echo \"this \'is a\' message\"", "")
-        val parsedCommand = executeCommand.parsedCommand
+        val command = "echo \"this \'is a\' message\""
+
+        val parsedCommand = commandParser.parseCommand(command)
 
         val expectedCommand = listOf("echo","this \'is a\' message")
-
         assertThat(parsedCommand).isEqualTo(expectedCommand)
     }
 
     @Test
     fun `parse command with nested double quotes`() {
-        val executeCommand = ExecuteCommand("echo \'this \"is a\" message\'", "")
-        val parsedCommand = executeCommand.parsedCommand
+        val command = "echo \'this \"is a\" message\'"
+
+        val parsedCommand = commandParser.parseCommand(command)
 
         val expectedCommand = listOf("echo","this \"is a\" message")
-
         assertThat(parsedCommand).isEqualTo(expectedCommand)
     }
 }

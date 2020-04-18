@@ -5,15 +5,13 @@ import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.ProcessExecutor
 
-class Main {
-    companion object {
+object Runner {
 
-        @JvmStatic
-        fun main(args: Array<String>) {
-            Pedreiro(
-                FileSystemHandler(),
-                Environment(), ConsoleHandler(), ProcessExecutor()
-            ).execute(args)
-        }
+    @JvmStatic
+    fun main(args: Array<String>) {
+        Pedreiro(
+            FileSystemHandler(),
+            Environment(), ConsoleHandler(), ProcessExecutor()
+        ).execute(args)
     }
 }

@@ -7,7 +7,8 @@ import com.github.andre2w.pedreiro.io.ProcessExecutor
 class ScaffoldingService(
     private val fileSystemHandler: FileSystemHandler,
     private val environment: Environment,
-    private val processExecutor: ProcessExecutor
+    private val processExecutor: ProcessExecutor,
+    private val commandParser: CommandParser
 ) {
     fun execute(blueprint: Blueprint) {
         val currentDir = environment.currentDir()
@@ -19,7 +20,10 @@ class ScaffoldingService(
         when (task) {
             is CreateFolder -> fileSystemHandler.createFolder("$currentDir/${task.path}")
             is CreateFile -> fileSystemHandler.createFile("$currentDir/${task.path}", task.content)
-            is ExecuteCommand -> processExecutor.execute(task.parsedCommand, "$currentDir/${task.folder}")
+            is ExecuteCommand -> processExecutor.execute(
+                commandParser.parseCommand(task.command),
+                "$currentDir/${task.folder}")
         }
     }
+
 }

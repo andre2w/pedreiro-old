@@ -16,7 +16,7 @@ class ScaffoldingServiceShould {
     private val environment = mockk<Environment>()
     private val processExecutor = mockk<ProcessExecutor>()
 
-    private val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor)
+    private val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor, CommandParser())
 
     private val baseDir = "/home/user/projects"
 
