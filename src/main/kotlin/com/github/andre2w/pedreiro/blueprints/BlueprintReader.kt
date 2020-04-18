@@ -15,12 +15,13 @@ class BlueprintReader(
     private val handlebars = Handlebars()
 
     fun read(arguments: Arguments): String {
-        val blueprintPath = "${configuration.blueprintsFolder}/${arguments.blueprintName}.yml"
+        val blueprintPath = "${configuration.blueprintsFolder}/${arguments.blueprintName}"
+
+        val blueprintTemplate = fileSystemHandler.readFile("$blueprintPath.yml")
+            ?: fileSystemHandler.readFile("$blueprintPath.yaml")
+            ?: throw BlueprintParsingException("Failed to read blueprint ${arguments.blueprintName} ($blueprintPath)")
 
         consoleHandler.print("Creating project from blueprint ($blueprintPath)")
-
-        val blueprintTemplate = fileSystemHandler.readFile(blueprintPath)
-            ?: throw BlueprintParsingException("Failed to read blueprint ${arguments.blueprintName} ($blueprintPath)")
 
         return handlebars
             .compileInline(blueprintTemplate)

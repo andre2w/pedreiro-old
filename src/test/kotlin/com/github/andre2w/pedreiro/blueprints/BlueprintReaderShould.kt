@@ -33,13 +33,13 @@ class BlueprintReaderShould {
               command: gradle init
     """.trimIndent()
 
+    private val blueprintReader = BlueprintReader(fileSystemHandler, configuration, consoleHandler)
 
     @Test
     fun `read yaml blueprint from file system parsing variables`() {
         val arguments = Arguments("test", mapOf("project_name" to "test"))
         every { fileSystemHandler.readFile("/home/user/pedreiro/.pedreiro/blueprints/test.yml") } returns blueprintTemplate
 
-        val blueprintReader = BlueprintReader(fileSystemHandler, configuration, consoleHandler)
         val blueprint = blueprintReader.read(arguments)
 
         assertThat(blueprint).isEqualTo(expectedBlueprint)
@@ -48,14 +48,22 @@ class BlueprintReaderShould {
     @Test
     fun `throw exception in case blueprint is not found`() {
         every { fileSystemHandler.readFile("/home/user/pedreiro/.pedreiro/blueprints/test.yml") } returns null
-
-        val blueprintReader = BlueprintReader(fileSystemHandler, configuration, consoleHandler)
+        every { fileSystemHandler.readFile("/home/user/pedreiro/.pedreiro/blueprints/test.yaml") } returns null
 
         assertThrows<BlueprintParsingException> {
             blueprintReader.read(Arguments("test"))
         }
     }
 
+    @Test
+    internal fun `read blueprint with yaml extension`() {
+        val arguments = Arguments("test", mapOf("project_name" to "test"))
+        val filepath = "/home/user/pedreiro/.pedreiro/blueprints/test"
+        every { fileSystemHandler.readFile("$filepath.yml")} returns null
+        every { fileSystemHandler.readFile("$filepath.yaml") } returns expectedBlueprint
 
+        val blueprint = blueprintReader.read(arguments)
 
+        assertThat(blueprint).isEqualTo(expectedBlueprint)
+    }
 }
