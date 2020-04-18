@@ -1,7 +1,7 @@
 package com.github.andre2w.pedreiro
 
 
-object Fixtures {
+object SimpleFixtures {
 
 
     val COMMAND_TEMPLATE = """

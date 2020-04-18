@@ -29,15 +29,15 @@ object BlueprintWithVariables : Spek({
         describe("createting a project form a blueprint with variables") {
             every { environment.currentDir() } returns baseDir
             every { environment.userHome() } returns homeDir
-            every { fileSystemHandler.readFile(configurationPath) } returns Fixtures.CONFIGURATION
-            every { fileSystemHandler.readFile(blueprintPath) } returns Fixtures.TEMPLATE_WITH_VARIABLES
+            every { fileSystemHandler.readFile(configurationPath) } returns SimpleFixtures.CONFIGURATION
+            every { fileSystemHandler.readFile(blueprintPath) } returns SimpleFixtures.TEMPLATE_WITH_VARIABLES
 
             pedreiro.execute(arrayOf(blueprintName,"-a","project_name=new-project","--arg","package_name=com.test"))
 
             it("should create resources with values passed as parameter") {
                 verify {
                     fileSystemHandler.createFolder("$baseDir/new-project")
-                    fileSystemHandler.createFile("$baseDir/new-project/build.gradle", Fixtures.BUILD_GRADLE_WITH_VARIABLE)
+                    fileSystemHandler.createFile("$baseDir/new-project/build.gradle", SimpleFixtures.BUILD_GRADLE_WITH_VARIABLE)
                 }
             }
         }

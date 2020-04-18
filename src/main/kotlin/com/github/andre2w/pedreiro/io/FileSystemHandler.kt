@@ -21,5 +21,9 @@ class FileSystemHandler {
         }
     }
 
+    fun isFolder(blueprintPath: String) : Boolean {
+        TODO("Not yet implemented")
+    }
+
     private fun String.toPath() = Paths.get(this)
 }
