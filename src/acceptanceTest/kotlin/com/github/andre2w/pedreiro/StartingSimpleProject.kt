@@ -26,6 +26,7 @@ object StartingSimpleProject : Spek({
 
         val pedreiro = Pedreiro(fileSystemHandler, environment, consoleHandler, processExecutor)
 
+        every { fileSystemHandler.isFolder("$homeDir/.pedreiro/blueprints/$blueprintName") } returns false
         describe("creating project from a simple blueprint with only folders and files") {
             every { environment.currentDir() } returns baseDir
             every { environment.userHome() } returns homeDir

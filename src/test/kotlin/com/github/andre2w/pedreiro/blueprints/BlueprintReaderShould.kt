@@ -24,7 +24,7 @@ class BlueprintReaderShould {
               command: gradle init
     """.trimIndent()
 
-    private val expectedBlueprint = """
+    private val parsedTemplate = """
         ---
         - type: folder
           name: "test"
@@ -38,17 +38,22 @@ class BlueprintReaderShould {
     @Test
     fun `read yaml blueprint from file system parsing variables`() {
         val arguments = Arguments("test", mapOf("project_name" to "test"))
-        every { fileSystemHandler.readFile("/home/user/pedreiro/.pedreiro/blueprints/test.yml") } returns blueprintTemplate
+        val filepath = "/home/user/pedreiro/.pedreiro/blueprints/test"
+        every { fileSystemHandler.readFile("$filepath.yml") } returns blueprintTemplate
+        every { fileSystemHandler.isFolder(filepath) } returns false
 
         val blueprint = blueprintReader.read(arguments)
 
-        assertThat(blueprint).isEqualTo(expectedBlueprint)
+        assertThat(blueprint).isEqualTo(Blueprint(parsedTemplate))
     }
 
     @Test
     fun `throw exception in case blueprint is not found`() {
-        every { fileSystemHandler.readFile("/home/user/pedreiro/.pedreiro/blueprints/test.yml") } returns null
-        every { fileSystemHandler.readFile("/home/user/pedreiro/.pedreiro/blueprints/test.yaml") } returns null
+        val filepath = "/home/user/pedreiro/.pedreiro/blueprints/test"
+        every { fileSystemHandler.readFile("$filepath.yml") } returns null
+        every { fileSystemHandler.readFile("$filepath.yaml") } returns null
+        every { fileSystemHandler.isFolder(filepath) } returns false
+
 
         assertThrows<BlueprintParsingException> {
             blueprintReader.read(Arguments("test"))
@@ -60,10 +65,37 @@ class BlueprintReaderShould {
         val arguments = Arguments("test", mapOf("project_name" to "test"))
         val filepath = "/home/user/pedreiro/.pedreiro/blueprints/test"
         every { fileSystemHandler.readFile("$filepath.yml")} returns null
-        every { fileSystemHandler.readFile("$filepath.yaml") } returns expectedBlueprint
+        every { fileSystemHandler.readFile("$filepath.yaml") } returns parsedTemplate
+        every { fileSystemHandler.isFolder(filepath) } returns false
 
         val blueprint = blueprintReader.read(arguments)
 
+        assertThat(blueprint).isEqualTo(Blueprint(parsedTemplate))
+    }
+
+    @Test
+    internal fun `read blueprint and other files in the folder`() {
+        val template = """
+            - type: file
+              name: build.gradle
+              source: build.gradle
+        """.trimIndent()
+        val buildGradle = """
+            plugin {
+              id 'kotlin'
+            }
+        """.trimIndent()
+        val arguments = Arguments("test")
+        val filepath = "/home/user/pedreiro/.pedreiro/blueprints/test"
+        every { fileSystemHandler.isFolder(filepath) } returns true
+        every { fileSystemHandler.readFile("$filepath/blueprint.yml") } returns template
+        every { fileSystemHandler.readFile("$filepath/build.gradle") } returns buildGradle
+        every { fileSystemHandler.listFilesIn(filepath) } returns listOf("blueprint.yml", "build.gradle")
+
+        val blueprint = blueprintReader.read(arguments)
+
+        val expectedBlueprint = Blueprint(template, mapOf("build.gradle" to buildGradle))
         assertThat(blueprint).isEqualTo(expectedBlueprint)
+
     }
 }

@@ -25,7 +25,7 @@ object BlueprintWithVariables : Spek({
         val processExecutor = mockk<ProcessExecutor>(relaxUnitFun = true)
 
         val pedreiro = Pedreiro(fileSystemHandler, environment, consoleHandler, processExecutor)
-
+        every { fileSystemHandler.isFolder("$homeDir/.pedreiro/blueprints/$blueprintName") } returns false
         describe("createting a project form a blueprint with variables") {
             every { environment.currentDir() } returns baseDir
             every { environment.userHome() } returns homeDir

@@ -34,6 +34,8 @@ object BlueprintFromFolder : Spek({
             every { fileSystemHandler.readFile("$blueprintPath/blueprint.yml") } returns FolderFixtures.TEMPLATE
             every { fileSystemHandler.readFile("$blueprintPath/variables.yml") } returns FolderFixtures.VARIABLES
             every { fileSystemHandler.readFile("$blueprintPath/build.gradle") } returns FolderFixtures.BUILD_GRADLE_TEMPLATE
+            every { fileSystemHandler.isFolder("$homeDir/.pedreiro/blueprints/$blueprintName") } returns true
+            every { fileSystemHandler.listFilesIn("$homeDir/.pedreiro/blueprints/$blueprintName") } returns listOf("build.gradle")
 
             pedreiro.execute(arrayOf(blueprintName))
 
