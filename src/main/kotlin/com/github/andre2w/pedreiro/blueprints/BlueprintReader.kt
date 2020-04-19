@@ -1,9 +1,11 @@
 package com.github.andre2w.pedreiro.blueprints
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.configuration.PedreiroConfiguration
 import com.github.andre2w.pedreiro.io.ConsoleHandler
 import com.github.andre2w.pedreiro.io.FileSystemHandler
+import com.github.andre2w.pedreiro.io.YAMLParser
 import com.github.jknack.handlebars.Handlebars
 
 class BlueprintReader(
@@ -33,8 +35,13 @@ class BlueprintReader(
     }
 
     private fun loadFromFolder(blueprintPath: String, arguments: Arguments): Blueprint {
-        val blueprint = loadFromFile("$blueprintPath/blueprint", arguments)
-        val extraFiles = loadExtraFiles(blueprintPath, arguments)
+        val variablesFile = loadFromFile("$blueprintPath/variables", arguments)
+
+        val variables = YAMLParser.objectMapper.readValue<Map<String, String>>(variablesFile)
+        val mergedArguments = arguments.mergeWith(variables)
+
+        val blueprint = loadFromFile("$blueprintPath/blueprint", mergedArguments)
+        val extraFiles = loadExtraFiles(blueprintPath, mergedArguments)
 
         return Blueprint(blueprint, extraFiles)
     }
@@ -43,7 +50,7 @@ class BlueprintReader(
         val extraFiles = fileSystemHandler.listFilesIn(blueprintPath)
 
         return extraFiles.asSequence()
-            .filter { file -> file != "blueprint.yml" }
+            .filter { file -> file != "blueprint.yml" && file != "variables.yml"}
             .map { file -> readExtraFile(blueprintPath, file, arguments) }
             .toMap()
     }
