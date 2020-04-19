@@ -20,31 +20,23 @@ class BlueprintReader(
         return if (fileSystemHandler.isFolder(blueprintPath)) {
             loadFromFolder(blueprintPath, arguments)
         } else {
-            loadFromFile(blueprintPath, arguments)
+            Blueprint(loadFromFile(blueprintPath, arguments))
         }
     }
 
-    private fun loadFromFile(blueprintPath: String, arguments: Arguments): Blueprint {
+    private fun loadFromFile(blueprintPath: String, arguments: Arguments): String {
         val blueprintTemplate = readFile("$blueprintPath.yml")
             ?: readFile("$blueprintPath.yaml")
             ?: throw BlueprintParsingException("Failed to read blueprint ${arguments.blueprintName}")
 
-        val blueprint = parseTemplate(blueprintTemplate, arguments)
-
-        return Blueprint(blueprint)
+        return parseTemplate(blueprintTemplate, arguments)
     }
 
-    private fun loadFromFolder(
-        blueprintPath: String,
-        arguments: Arguments
-    ): Blueprint {
-        val blueprintTemplate = fileSystemHandler.readFile("$blueprintPath/blueprint.yml")
-            ?: throw BlueprintParsingException("Failed to read blueprint ${arguments.blueprintName}")
+    private fun loadFromFolder(blueprintPath: String, arguments: Arguments): Blueprint {
+        val blueprint = loadFromFile("$blueprintPath/blueprint", arguments)
+        val extraFiles = loadExtraFiles(blueprintPath, arguments)
 
-        val blueprint = parseTemplate(blueprintTemplate, arguments)
-        val files = loadExtraFiles(blueprintPath, arguments)
-
-        return Blueprint(blueprint, files)
+        return Blueprint(blueprint, extraFiles)
     }
 
     private fun loadExtraFiles(blueprintPath: String, arguments: Arguments): HashMap<String, String> {
@@ -53,7 +45,9 @@ class BlueprintReader(
 
         for (extraFile in extraFiles) {
             if (extraFile != "blueprint.yml") {
-                val extraFileTemplate = fileSystemHandler.readFile("$blueprintPath/$extraFile")!!
+                val extraFileTemplate = fileSystemHandler.readFile("$blueprintPath/$extraFile")
+                    ?: throw BlueprintParsingException("Failed to read file $extraFile")
+
                 val parsedExtraFile = parseTemplate(extraFileTemplate, arguments)
                 files[extraFile] = parsedExtraFile
             }
@@ -73,5 +67,4 @@ class BlueprintReader(
         }
         return blueprint
     }
-
 }

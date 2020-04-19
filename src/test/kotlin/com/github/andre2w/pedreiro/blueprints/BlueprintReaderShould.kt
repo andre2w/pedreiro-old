@@ -127,4 +127,32 @@ class BlueprintReaderShould {
         val expectedBlueprint = Blueprint(template, mapOf("build.gradle" to buildGradle))
         assertThat(blueprint).isEqualTo(expectedBlueprint)
     }
+
+    @Test
+    internal fun `throw exception when fail to load extra file`() {
+        val template = """
+            - type: file
+              name: build.gradle
+              source: build.gradle
+        """.trimIndent()
+        val buildGradleTemplate = """
+            plugin {
+              id 'kotlin' version: {{ kotlin_version }}
+            }
+        """.trimIndent()
+        val arguments = Arguments("test", mapOf("kotlin_version" to "1.3.71"))
+        val filepath = "/home/user/pedreiro/.pedreiro/blueprints/test"
+
+        every { fileSystemHandler.isFolder(filepath) } returns true
+        every { fileSystemHandler.readFile("$filepath/blueprint.yml") } returns template
+        every { fileSystemHandler.readFile("$filepath/build.gradle") } returns null
+        every { fileSystemHandler.listFilesIn(filepath) } returns listOf("blueprint.yml", "build.gradle")
+
+
+
+        assertThrows<BlueprintParsingException> {
+            blueprintReader.read(arguments)
+        }
+
+    }
 }
