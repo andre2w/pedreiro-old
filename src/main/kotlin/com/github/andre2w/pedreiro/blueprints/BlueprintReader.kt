@@ -35,15 +35,25 @@ class BlueprintReader(
     }
 
     private fun loadFromFolder(blueprintPath: String, arguments: Arguments): Blueprint {
-        val variablesFile = loadFromFile("$blueprintPath/variables", arguments)
-
-        val variables = YAMLParser.objectMapper.readValue<Map<String, String>>(variablesFile)
-        val mergedArguments = arguments.mergeWith(variables)
+        val mergedArguments = readVariables(blueprintPath, arguments)
 
         val blueprint = loadFromFile("$blueprintPath/blueprint", mergedArguments)
         val extraFiles = loadExtraFiles(blueprintPath, mergedArguments)
 
         return Blueprint(blueprint, extraFiles)
+    }
+
+    private fun readVariables(
+        blueprintPath: String,
+        arguments: Arguments
+    ): Arguments {
+        return try {
+            val variablesFile = loadFromFile("$blueprintPath/variables", arguments)
+            val variables = YAMLParser.objectMapper.readValue<Map<String, String>>(variablesFile)
+            arguments.mergeWith(variables)
+        } catch (err : BlueprintParsingException) {
+            arguments
+        }
     }
 
     private fun loadExtraFiles(blueprintPath: String, arguments: Arguments): Map<String, String> {

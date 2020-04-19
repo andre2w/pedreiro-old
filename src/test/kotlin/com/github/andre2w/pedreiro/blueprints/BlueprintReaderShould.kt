@@ -91,6 +91,8 @@ class BlueprintReaderShould {
         every { fileSystemHandler.readFile("$filepath/blueprint.yml") } returns template
         every { fileSystemHandler.readFile("$filepath/build.gradle") } returns buildGradle
         every { fileSystemHandler.listFilesIn(filepath) } returns listOf("blueprint.yml", "build.gradle")
+        every { fileSystemHandler.readFile("$filepath/variables.yml") } returns null
+        every { fileSystemHandler.readFile("$filepath/variables.yaml") } returns null
 
         val blueprint = blueprintReader.read(arguments)
 
@@ -121,6 +123,8 @@ class BlueprintReaderShould {
         every { fileSystemHandler.readFile("$filepath/blueprint.yml") } returns template
         every { fileSystemHandler.readFile("$filepath/build.gradle") } returns buildGradleTemplate
         every { fileSystemHandler.listFilesIn(filepath) } returns listOf("blueprint.yml", "build.gradle")
+        every { fileSystemHandler.readFile("$filepath/variables.yml") } returns null
+        every { fileSystemHandler.readFile("$filepath/variables.yaml") } returns null
 
         val blueprint = blueprintReader.read(arguments)
 
@@ -147,6 +151,9 @@ class BlueprintReaderShould {
         every { fileSystemHandler.readFile("$filepath/blueprint.yml") } returns template
         every { fileSystemHandler.readFile("$filepath/build.gradle") } returns null
         every { fileSystemHandler.listFilesIn(filepath) } returns listOf("blueprint.yml", "build.gradle")
+        every { fileSystemHandler.readFile("$filepath/variables.yml") } returns null
+        every { fileSystemHandler.readFile("$filepath/variables.yaml") } returns null
+
 
         assertThrows<BlueprintParsingException> {
             blueprintReader.read(arguments)
