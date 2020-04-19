@@ -39,20 +39,22 @@ class BlueprintReader(
         return Blueprint(blueprint, extraFiles)
     }
 
-    private fun loadExtraFiles(blueprintPath: String, arguments: Arguments): HashMap<String, String> {
+    private fun loadExtraFiles(blueprintPath: String, arguments: Arguments): Map<String, String> {
         val extraFiles = fileSystemHandler.listFilesIn(blueprintPath)
-        val files = HashMap<String, String>()
 
-        for (extraFile in extraFiles) {
-            if (extraFile != "blueprint.yml") {
-                val extraFileTemplate = fileSystemHandler.readFile("$blueprintPath/$extraFile")
-                    ?: throw BlueprintParsingException("Failed to read file $extraFile")
+        return extraFiles.asSequence()
+            .filter { file -> file != "blueprint.yml" }
+            .map { file -> readExtraFile(blueprintPath, file, arguments) }
+            .toMap()
+    }
 
-                val parsedExtraFile = parseTemplate(extraFileTemplate, arguments)
-                files[extraFile] = parsedExtraFile
-            }
-        }
-        return files
+    private fun readExtraFile(blueprintPath: String, file: String, arguments: Arguments): Pair<String, String> {
+        val extraFileTemplate = fileSystemHandler.readFile("$blueprintPath/$file")
+            ?: throw BlueprintParsingException("Failed to read file $file")
+
+        val extraFile = parseTemplate(extraFileTemplate, arguments)
+
+        return Pair(file, extraFile)
     }
 
     private fun parseTemplate(blueprintTemplate: String, arguments: Arguments) : String =
