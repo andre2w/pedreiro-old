@@ -10,10 +10,10 @@ class ScaffoldingService(
     private val processExecutor: ProcessExecutor,
     private val commandParser: CommandParser
 ) {
-    fun execute(blueprint: Blueprint) {
+    fun execute(tasks: Tasks) {
         val currentDir = environment.currentDir()
 
-        blueprint.tasks.forEach { task -> executeTask(task, currentDir) }
+        tasks.tasks.forEach { task -> executeTask(task, currentDir) }
     }
 
     private fun executeTask(task: Task, currentDir: String) {

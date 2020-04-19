@@ -14,16 +14,18 @@ class BlueprintReader(
 
     private val handlebars = Handlebars()
 
-    fun read(arguments: Arguments): String {
+    fun read(arguments: Arguments): Blueprint {
         val blueprintPath = "${configuration.blueprintsFolder}/${arguments.blueprintName}"
 
         val blueprintTemplate = readFile("$blueprintPath.yml")
             ?: readFile("$blueprintPath.yaml")
             ?: throw BlueprintParsingException("Failed to read blueprint ${arguments.blueprintName}")
 
-        return handlebars
+        val blueprint = handlebars
             .compileInline(blueprintTemplate)
             .apply(arguments.extraArgs)
+
+        return Blueprint(blueprint)
     }
 
     private fun readFile(blueprintPath: String) : String? {

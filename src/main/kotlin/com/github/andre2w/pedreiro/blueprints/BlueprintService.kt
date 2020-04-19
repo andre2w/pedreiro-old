@@ -3,8 +3,6 @@ package com.github.andre2w.pedreiro.blueprints
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.yaml.JacksonYAMLParseException
 import com.github.andre2w.pedreiro.arguments.Arguments
-import com.github.andre2w.pedreiro.io.ConsoleHandler
-import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.YAMLParser
 
 sealed class ParseResult {
@@ -16,27 +14,28 @@ class BlueprintService(private val blueprintReader: BlueprintReader) {
 
     private val objectMapper = YAMLParser.objectMapper
 
-    fun loadBlueprint(arguments: Arguments) : Blueprint {
+    fun loadBlueprint(arguments: Arguments) : Tasks {
 
-        val blueprint = try {
-            objectMapper.readTree(blueprintReader.read(arguments))
+        val blueprint = blueprintReader.read(arguments)
+        val blueprintTasks = try {
+            objectMapper.readTree(blueprint.tasks)
         } catch (err: JacksonYAMLParseException) {
             throw BlueprintParsingException("Failed to parse blueprint ${arguments.blueprintName}")
         }
 
-        return Blueprint.from(parse(blueprint))
+        return Tasks.from(parse(blueprintTasks, blueprint))
     }
 
-    private fun parse(node: JsonNode, level: List<String> = ArrayList()) : List<Task> {
+    private fun parse(node: JsonNode, blueprint : Blueprint, level: List<String> = ArrayList()) : List<Task> {
         if (node.isArray) {
-            return parseList(node, level)
+            return parseList(node, level, blueprint)
         }
 
         val result = ArrayList<Task>()
         val parsedResult =  when (node["type"].asText()) {
             "command" -> parseCommand(level.asPath(), node)
-            "file"    -> parseCreateFile(level.asPath() , node)
-            "folder"  -> parseCreateFolder(level, node)
+            "file"    -> parseCreateFile(level.asPath() , node, blueprint)
+            "folder"  -> parseCreateFolder(level, node, blueprint)
             else -> throw BlueprintParsingException("Invalid type of ${node["type"].asText()}")
         }
 
@@ -48,10 +47,10 @@ class BlueprintService(private val blueprintReader: BlueprintReader) {
         return result
     }
 
-    private fun parseList(nodes: JsonNode, level: List<String>): List<Task> =
-        nodes.flatMap { node -> parse(node, level) }
+    private fun parseList(nodes: JsonNode, level: List<String>, blueprint: Blueprint): List<Task> =
+        nodes.flatMap { node -> parse(node, blueprint,level) }
 
-    private fun parseCreateFolder(level: List<String>, node: JsonNode) : ParseResult.Many {
+    private fun parseCreateFolder(level: List<String>, node: JsonNode, blueprint: Blueprint) : ParseResult.Many {
         val result = ArrayList<Task>()
 
         val currentLevel = level + node["name"].asText()
@@ -59,14 +58,23 @@ class BlueprintService(private val blueprintReader: BlueprintReader) {
         result.add(CreateFolder(currentLevel.asPath()))
 
         node["children"]?.let { children ->
-            result.addAll(parseList(children, currentLevel))
+            result.addAll(parseList(children, currentLevel, blueprint))
         }
 
         return ParseResult.Many(result)
     }
 
-    private fun parseCreateFile(path: String, node: JsonNode): ParseResult.Single {
-        return ParseResult.Single(CreateFile(path + "/" + node["name"].asText(), node["content"].asText()))
+    private fun parseCreateFile(path: String, node: JsonNode, blueprint: Blueprint): ParseResult.Single {
+
+        val filePath = if (path == "") node["name"].asText() else path + "/" + node["name"].asText()
+
+        val createFile = if (node.has("content")) {
+            CreateFile(filePath, node["content"].asText())
+        } else {
+            CreateFile(filePath, blueprint.fileContentOf(node["source"].asText()) )
+        }
+
+        return ParseResult.Single(createFile)
     }
 
     private fun parseCommand(path: String, node: JsonNode): ParseResult.Single {

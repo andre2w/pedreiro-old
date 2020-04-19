@@ -1,11 +1,8 @@
 package com.github.andre2w.pedreiro.blueprints
 
-data class Blueprint(val tasks: List<Task>) {
+data class Blueprint(val tasks: String, val files: Map<String, String> = emptyMap()) {
 
-    companion object {
-        fun from(tasks : List<Task>)  = Blueprint(tasks)
-
-
+    fun fileContentOf(filename: String): String {
+        return files.get(filename)!!
     }
-
 }

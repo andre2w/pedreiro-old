@@ -31,11 +31,11 @@ class BlueprintServiceShould {
                        name: resources
         """.trimIndent()
         val arguments = Arguments(blueprintName)
-        every { blueprintReader.read(arguments) } returns blueprint
+        every { blueprintReader.read(arguments) } returns Blueprint(blueprint)
 
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
-        val tasks = Blueprint.from(
+        val tasks = Tasks.from(
             CreateFolder("project"),
             CreateFolder("project/src"),
             CreateFolder("project/src/main"),
@@ -57,12 +57,12 @@ class BlueprintServiceShould {
               name: build.gradle
               content: dependencies list""".trimIndent()
         val arguments = Arguments(blueprintName)
-        every { blueprintReader.read(arguments) } returns blueprint
+        every { blueprintReader.read(arguments) } returns Blueprint(blueprint)
 
 
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
-        val tasks = Blueprint.from(
+        val tasks = Tasks.from(
             CreateFolder("project"),
             CreateFile("project/build.gradle", "dependencies list")
         )
@@ -82,12 +82,12 @@ class BlueprintServiceShould {
                   command: gradle init
         """.trimIndent()
         val arguments = Arguments(blueprintName)
-        every { blueprintReader.read(arguments) } returns blueprint
+        every { blueprintReader.read(arguments) } returns Blueprint(blueprint)
 
 
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
-        val tasks = Blueprint.from(
+        val tasks = Tasks.from(
             CreateFolder("test-command"),
             ExecuteCommand("gradle init", "test-command")
         )
@@ -100,11 +100,30 @@ class BlueprintServiceShould {
         val blueprintName = "blueprintWithCommand"
         val blueprint = "\"INVALID:\":\":ASDF:"
         val arguments = Arguments(blueprintName)
-        every { blueprintReader.read(arguments) } returns blueprint
+        every { blueprintReader.read(arguments) } returns Blueprint(blueprint)
 
         assertThrows<BlueprintParsingException> { blueprintService.loadBlueprint(arguments) }
     }
 
+    @Test
+    internal fun `parse CreateFile using content from file in folder`() {
+        val blueprint = """
+            - type: file
+              name: build.gradle
+              source: build.gradle
+        """.trimIndent()
+        val arguments = Arguments("multifile-blueprint")
+        val files = mapOf(
+            "build.gradle" to "id 'kotlin'"
+        )
+        every { blueprintReader.read(arguments) } returns Blueprint(blueprint, files)
 
+        val loadedTasks = blueprintService.loadBlueprint(arguments)
+
+        val expectedTasks = Tasks.from(
+            CreateFile("build.gradle", "id 'kotlin'")
+        )
+        assertThat(loadedTasks).isEqualTo(expectedTasks)
+    }
 }
 
