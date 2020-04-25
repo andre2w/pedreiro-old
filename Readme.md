@@ -174,6 +174,110 @@ blueprintsFolder: /Users/andre/.pedreiro/blueprints
 
 Right now you must create the folder and add the configuration file there manually.
 
+## Blueprint Folder
+
+If your blueprint file is getting too big you can split into multiple files. For that you must create a folder with 
+the name of the blueprint and inside the folder you create the `blueprint.yml` declaring the blueprint.
+
+We can split the previous example to a folder. We create a folder named `folderBlueprint` and create the `blueprint.yml`
+inside the folder.
+
+```
+blueprintTemplate
+└── blueprint.yml
+``` 
+
+Now we can change the `blueprint.yml` to reference an external `build.gradle` file instead of having the contents inside
+the blueprint. Use the `source` key passing the name of the original file and add the file to the blueprint folder.
+
+```yaml
+    - type: file
+      name: build.gradle
+      source: build.gradle
+```
+
+The extra files also support variables like the main blueprint Here's the `build.gradle`: 
+
+```groovy
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.71'
+}
+
+group '{{ project_group }}'
+version '1.0-SNAPSHOT' 
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+            
+    testImplementation "org.junit.jupiter:junit-jupiter:5.6.1"
+}
+        
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+```
+
+The final `blueprint.yml` file will be
+
+```yaml
+---
+- type: folder
+  name: {{ project_name }}
+  children:
+    - type: folder
+      name: src
+      children:
+        - type: folder
+          name: main
+          children:
+            - type: folder
+              name: kotlin
+
+            - type: folder
+              name: resources
+
+        - type: folder
+          name: test
+          children:
+            - type: folder
+              name: kotlin
+
+            - type: folder
+              name: resources
+
+    - type: file
+      name: build.gradle
+      source: build.gradle
+  
+    - type: command
+      command: gradle wrapper
+
+    - type: command
+      command: git init
+    - type: command
+      command: git add .
+    - type: command
+      command: git commit -m "Initial Commit"
+```
+
+and the folder structure will look like:
+
+```
+blueprintTemplate
+├── blueprint.yml
+├── build.gradle
+└── variables.yml
+``` 
+
 ## Building
+
+### Tests
+
+To run all the tests you can just execute `./gradlew clean check`.
+
+### Fat Jar
 
 To build the project you can clone and execute `./gradlew sJ`, this will generate a fat jar with all the dependencies inside `build/libs`. 
