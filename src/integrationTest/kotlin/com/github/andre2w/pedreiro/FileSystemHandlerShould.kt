@@ -60,4 +60,28 @@ class FileSystemHandlerShould {
 
         assertThat(readContent).isNull()
     }
+
+    @Test
+    internal fun `check if path is a folder`() {
+        val folderPath = "${System.getProperty("user.dir")}/test-folder-${Instant.now()}"
+        Files.createDirectory(Paths.get(folderPath))
+
+        assertThat(fileSystemHandler.isFolder(folderPath)).isTrue()
+
+        Files.delete(Paths.get(folderPath))
+    }
+
+    @Test
+    internal fun `list file names inside a folder`() {
+        val folderPath = "${System.getProperty("user.dir")}/test-folder-${Instant.now()}"
+        Files.createDirectory(Paths.get(folderPath))
+        Files.write(Paths.get("$folderPath/test.txt"), fileContent.toByteArray())
+
+        val filesInFolder = fileSystemHandler.listFilesIn(folderPath)
+
+        assertThat(filesInFolder).isEqualTo(listOf("test.txt"))
+
+        Files.delete(Paths.get("$folderPath/test.txt"))
+        Files.delete(Paths.get(folderPath))
+    }
 }
