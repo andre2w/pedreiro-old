@@ -263,7 +263,8 @@ The final `blueprint.yml` file will be
       command: git commit -m "Initial Commit"
 ```
 
-and the folder structure will look like:
+In case you have multiple files that must have the same value you can create a `variables.yml` and declare all variables there.
+The file will be read first and all the variables substituted, by the end the folder structure will look like:
 
 ```
 blueprintTemplate
