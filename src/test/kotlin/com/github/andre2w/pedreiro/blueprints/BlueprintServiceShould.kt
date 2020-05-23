@@ -1,16 +1,27 @@
 package com.github.andre2w.pedreiro.blueprints
 
 import com.github.andre2w.pedreiro.arguments.Arguments
+import com.github.andre2w.pedreiro.io.Environment
+import com.github.andre2w.pedreiro.io.FileSystemHandler
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class BlueprintServiceShould {
 
     private val blueprintReader = mockk<BlueprintReader>()
-    private val blueprintService = BlueprintService(blueprintReader)
+    private val fileSystemHandler = mockk<FileSystemHandler>()
+    private val environment = mockk<Environment>()
+    private val blueprintService = BlueprintService(blueprintReader, fileSystemHandler, environment)
+
+    @BeforeEach
+    internal fun setUp() {
+        clearAllMocks()
+    }
 
     @Test
     fun `parse blueprint that only create folders`() {
@@ -36,11 +47,11 @@ class BlueprintServiceShould {
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
         val tasks = Tasks.from(
-            CreateFolder("project"),
-            CreateFolder("project/src"),
-            CreateFolder("project/src/main"),
-            CreateFolder("project/src/main/kotlin"),
-            CreateFolder("project/src/main/resources")
+            CreateFolder("project", fileSystemHandler, environment),
+            CreateFolder("project/src", fileSystemHandler, environment),
+            CreateFolder("project/src/main", fileSystemHandler, environment),
+            CreateFolder("project/src/main/kotlin", fileSystemHandler, environment),
+            CreateFolder("project/src/main/resources", fileSystemHandler, environment)
         )
 
         assertThat(loadedTasks).isEqualTo(tasks)
@@ -63,7 +74,7 @@ class BlueprintServiceShould {
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
         val tasks = Tasks.from(
-            CreateFolder("project"),
+            CreateFolder("project", fileSystemHandler, environment),
             CreateFile("project/build.gradle", "dependencies list")
         )
 
@@ -88,7 +99,7 @@ class BlueprintServiceShould {
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
         val tasks = Tasks.from(
-            CreateFolder("test-command"),
+            CreateFolder("test-command", fileSystemHandler, environment),
             ExecuteCommand("gradle init", "test-command")
         )
 

@@ -28,7 +28,7 @@ class Pedreiro(
 
         val blueprintReader = BlueprintReader(fileSystemHandler, pedreiroConfiguration, consoleHandler)
 
-        val blueprintService = BlueprintService(blueprintReader)
+        val blueprintService = BlueprintService(blueprintReader, fileSystemHandler, environment)
 
         val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor, CommandParser())
 

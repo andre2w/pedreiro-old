@@ -30,8 +30,8 @@ class ScaffoldingServiceShould {
         every { environment.currentDir() } returns baseDir
 
         val blueprint = Tasks.from(
-            CreateFolder("pedreiro"),
-            CreateFolder("pedreiro/src")
+            CreateFolder("pedreiro", fileSystemHandler, environment),
+            CreateFolder("pedreiro/src", fileSystemHandler, environment)
         )
         scaffoldingService.execute(blueprint)
 
@@ -45,7 +45,7 @@ class ScaffoldingServiceShould {
     fun `create file with contents in the current folder`() {
         every { environment.currentDir() } returns baseDir
         val tasks = Tasks.from(
-            CreateFolder("pedreiro"),
+            CreateFolder("pedreiro", fileSystemHandler, environment),
             CreateFile("pedreiro/build.gradle", "dependencies")
         )
 

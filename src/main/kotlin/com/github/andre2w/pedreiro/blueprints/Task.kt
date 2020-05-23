@@ -1,12 +1,33 @@
 package com.github.andre2w.pedreiro.blueprints
 
-interface Task
+import com.github.andre2w.pedreiro.io.Environment
+import com.github.andre2w.pedreiro.io.FileSystemHandler
 
-data class CreateFolder(val path: String) : Task
+interface Task {
+    fun execute()
+}
 
-data class CreateFile(val path: String, val content: String) : Task
+data class CreateFolder(
+    val path: String,
+    private val fileSystemHandler: FileSystemHandler,
+    private val environment: Environment
+) : Task {
+    override fun execute() {
+        fileSystemHandler.createFolder("${environment.currentDir()}/$path")
+    }
+}
 
-data class ExecuteCommand(val command: String, val folder: String) : Task
+data class CreateFile(val path: String, val content: String) : Task {
+    override fun execute() {
+        TODO("Not yet implemented")
+    }
+}
+
+data class ExecuteCommand(val command: String, val folder: String) : Task {
+    override fun execute() {
+        TODO("Not yet implemented")
+    }
+}
 
 data class Tasks(val tasks: List<Task>) {
     companion object {

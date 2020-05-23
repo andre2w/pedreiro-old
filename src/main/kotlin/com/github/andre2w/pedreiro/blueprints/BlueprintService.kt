@@ -3,6 +3,8 @@ package com.github.andre2w.pedreiro.blueprints
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.yaml.JacksonYAMLParseException
 import com.github.andre2w.pedreiro.arguments.Arguments
+import com.github.andre2w.pedreiro.io.Environment
+import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.YAMLParser
 
 sealed class ParseResult {
@@ -10,7 +12,11 @@ sealed class ParseResult {
     data class Many(val tasks: List<Task>) : ParseResult()
 }
 
-class BlueprintService(private val blueprintReader: BlueprintReader) {
+class BlueprintService(
+    private val blueprintReader: BlueprintReader,
+    private val fileSystemHandler: FileSystemHandler,
+    private val environment: Environment
+) {
 
     private val objectMapper = YAMLParser.objectMapper
 
@@ -55,7 +61,7 @@ class BlueprintService(private val blueprintReader: BlueprintReader) {
 
         val currentLevel = level + node["name"].asText()
 
-        result.add(CreateFolder(currentLevel.asPath()))
+        result.add(CreateFolder(currentLevel.asPath(), fileSystemHandler, environment))
 
         node["children"]?.let { children ->
             result.addAll(parseList(children, currentLevel, blueprint))
