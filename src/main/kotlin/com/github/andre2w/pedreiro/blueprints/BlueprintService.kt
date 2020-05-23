@@ -109,7 +109,8 @@ class BlueprintService(
                 node["command"].asText(),
                 path,
                 processExecutor,
-                commandParser
+                commandParser,
+                environment
             )
         )
     }

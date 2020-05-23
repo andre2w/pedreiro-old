@@ -9,4 +9,8 @@ data class Tasks(val tasks: List<Task>) {
         fun from(tasks : List<Task>)  =
             Tasks(tasks)
     }
+
+    fun forEach(action: (Task) -> Unit) {
+        tasks.forEach(action)
+    }
 }

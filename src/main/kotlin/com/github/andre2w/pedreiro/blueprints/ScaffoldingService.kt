@@ -1,30 +1,9 @@
 package com.github.andre2w.pedreiro.blueprints
 
-import com.github.andre2w.pedreiro.io.Environment
-import com.github.andre2w.pedreiro.io.FileSystemHandler
-import com.github.andre2w.pedreiro.io.ProcessExecutor
 import com.github.andre2w.pedreiro.tasks.*
 
-class ScaffoldingService(
-    private val fileSystemHandler: FileSystemHandler,
-    private val environment: Environment,
-    private val processExecutor: ProcessExecutor,
-    private val commandParser: CommandParser
-) {
+class ScaffoldingService {
     fun execute(tasks: Tasks) {
-        val currentDir = environment.currentDir()
-
-        tasks.tasks.forEach { task -> executeTask(task, currentDir) }
+        tasks.forEach(Task::execute)
     }
-
-    private fun executeTask(task: Task, currentDir: String) {
-        when (task) {
-            is CreateFolder -> fileSystemHandler.createFolder("$currentDir/${task.path}")
-            is CreateFile -> fileSystemHandler.createFile("$currentDir/${task.path}", task.content)
-            is ExecuteCommand -> processExecutor.execute(
-                commandParser.parseCommand(task.command),
-                "$currentDir/${task.folder}")
-        }
-    }
-
 }

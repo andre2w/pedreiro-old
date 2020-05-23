@@ -141,7 +141,8 @@ class BlueprintServiceShould {
                 "gradle init",
                 "test-command",
                 processExecutor,
-                commandParser
+                commandParser,
+                environment
             )
         )
 

@@ -37,7 +37,7 @@ class Pedreiro(
             commandParser
         )
 
-        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor, commandParser)
+        val scaffoldingService = ScaffoldingService()
 
         val arguments = argumentParser.parse(args)
 
