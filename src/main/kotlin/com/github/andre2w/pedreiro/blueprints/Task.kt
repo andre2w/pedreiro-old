@@ -2,6 +2,7 @@ package com.github.andre2w.pedreiro.blueprints
 
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
+import com.github.andre2w.pedreiro.io.ProcessExecutor
 
 interface Task {
     fun execute()
@@ -28,9 +29,14 @@ data class CreateFile(
     }
 }
 
-data class ExecuteCommand(val command: String, val folder: String) : Task {
+data class ExecuteCommand(
+    val command: String,
+    val folder: String,
+    private val processExecutor: ProcessExecutor,
+    private val commandParser: CommandParser
+) : Task {
     override fun execute() {
-        TODO("Not yet implemented")
+        processExecutor.execute(commandParser.parseCommand(command), folder)
     }
 }
 

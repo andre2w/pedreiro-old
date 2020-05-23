@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.JacksonYAMLParseException
 import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
+import com.github.andre2w.pedreiro.io.ProcessExecutor
 import com.github.andre2w.pedreiro.io.YAMLParser
 
 sealed class ParseResult {
@@ -15,7 +16,9 @@ sealed class ParseResult {
 class BlueprintService(
     private val blueprintReader: BlueprintReader,
     private val fileSystemHandler: FileSystemHandler,
-    private val environment: Environment
+    private val environment: Environment,
+    private val processExecutor: ProcessExecutor,
+    private val commandParser: CommandParser
 ) {
 
     private val objectMapper = YAMLParser.objectMapper
@@ -84,7 +87,7 @@ class BlueprintService(
     }
 
     private fun parseCommand(path: String, node: JsonNode): ParseResult.Single {
-        return ParseResult.Single(ExecuteCommand(node["command"].asText(), path))
+        return ParseResult.Single(ExecuteCommand(node["command"].asText(), path, processExecutor, commandParser))
     }
 
     private fun List<String>.asPath() = this.joinToString("/")

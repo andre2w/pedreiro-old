@@ -27,10 +27,17 @@ class Pedreiro(
             configurationManager.loadFrom(environment.userHome() + "/.pedreiro/configuration.yml")
 
         val blueprintReader = BlueprintReader(fileSystemHandler, pedreiroConfiguration, consoleHandler)
+        val commandParser = CommandParser()
 
-        val blueprintService = BlueprintService(blueprintReader, fileSystemHandler, environment)
+        val blueprintService = BlueprintService(
+            blueprintReader,
+            fileSystemHandler,
+            environment,
+            processExecutor,
+            commandParser
+        )
 
-        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor, CommandParser())
+        val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor, commandParser)
 
         val arguments = argumentParser.parse(args)
 

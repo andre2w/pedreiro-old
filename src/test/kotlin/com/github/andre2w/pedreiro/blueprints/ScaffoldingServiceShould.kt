@@ -15,8 +15,9 @@ class ScaffoldingServiceShould {
     private val fileSystemHandler = mockk<FileSystemHandler>(relaxUnitFun = true)
     private val environment = mockk<Environment>()
     private val processExecutor = mockk<ProcessExecutor>()
+    private val commandParser = CommandParser()
 
-    private val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor, CommandParser())
+    private val scaffoldingService = ScaffoldingService(fileSystemHandler, environment, processExecutor, commandParser)
 
     private val baseDir = "/home/user/projects"
 
@@ -61,7 +62,7 @@ class ScaffoldingServiceShould {
     @Test
     fun `execute command in the specified folder`() {
         val command = listOf("gradle", "init")
-        val tasks = Tasks.from(ExecuteCommand("gradle init", "pedreiro"))
+        val tasks = Tasks.from(ExecuteCommand("gradle init", "pedreiro", processExecutor, commandParser))
 
         every { environment.currentDir() } returns baseDir
         every { processExecutor.execute(command, "/home/user/projects/pedreiro") } returns 0

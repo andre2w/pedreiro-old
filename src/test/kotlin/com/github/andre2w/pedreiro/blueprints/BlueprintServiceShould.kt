@@ -3,6 +3,7 @@ package com.github.andre2w.pedreiro.blueprints
 import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
+import com.github.andre2w.pedreiro.io.ProcessExecutor
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -16,7 +17,9 @@ class BlueprintServiceShould {
     private val blueprintReader = mockk<BlueprintReader>()
     private val fileSystemHandler = mockk<FileSystemHandler>()
     private val environment = mockk<Environment>()
-    private val blueprintService = BlueprintService(blueprintReader, fileSystemHandler, environment)
+    private val processExecutor = mockk<ProcessExecutor>()
+    private val commandParser = mockk<CommandParser>()
+    private val blueprintService = BlueprintService(blueprintReader, fileSystemHandler, environment, processExecutor, commandParser)
 
     @BeforeEach
     internal fun setUp() {
@@ -100,7 +103,7 @@ class BlueprintServiceShould {
 
         val tasks = Tasks.from(
             CreateFolder("test-command", fileSystemHandler, environment),
-            ExecuteCommand("gradle init", "test-command")
+            ExecuteCommand("gradle init", "test-command", processExecutor, commandParser)
         )
 
         assertThat(loadedTasks).isEqualTo(tasks)
