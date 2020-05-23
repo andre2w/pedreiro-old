@@ -46,7 +46,7 @@ class ScaffoldingServiceShould {
         every { environment.currentDir() } returns baseDir
         val tasks = Tasks.from(
             CreateFolder("pedreiro", fileSystemHandler, environment),
-            CreateFile("pedreiro/build.gradle", "dependencies")
+            CreateFile("pedreiro/build.gradle", "dependencies", fileSystemHandler, environment)
         )
 
 

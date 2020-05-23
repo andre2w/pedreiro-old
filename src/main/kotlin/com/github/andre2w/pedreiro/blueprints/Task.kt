@@ -17,9 +17,14 @@ data class CreateFolder(
     }
 }
 
-data class CreateFile(val path: String, val content: String) : Task {
+data class CreateFile(
+    val path: String,
+    val content: String,
+    private val fileSystemHandler: FileSystemHandler,
+    private val environment: Environment
+) : Task {
     override fun execute() {
-        TODO("Not yet implemented")
+        fileSystemHandler.createFile("${environment.currentDir()}/$path",content)
     }
 }
 

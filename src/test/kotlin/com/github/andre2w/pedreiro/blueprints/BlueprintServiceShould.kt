@@ -75,7 +75,7 @@ class BlueprintServiceShould {
 
         val tasks = Tasks.from(
             CreateFolder("project", fileSystemHandler, environment),
-            CreateFile("project/build.gradle", "dependencies list")
+            CreateFile("project/build.gradle", "dependencies list", fileSystemHandler, environment)
         )
 
         assertThat(loadedTasks).isEqualTo(tasks)
@@ -132,7 +132,7 @@ class BlueprintServiceShould {
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
         val expectedTasks = Tasks.from(
-            CreateFile("build.gradle", "id 'kotlin'")
+            CreateFile("build.gradle", "id 'kotlin'", fileSystemHandler, environment)
         )
         assertThat(loadedTasks).isEqualTo(expectedTasks)
     }

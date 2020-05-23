@@ -75,9 +75,9 @@ class BlueprintService(
         val filePath = if (path == "") node["name"].asText() else path + "/" + node["name"].asText()
 
         val createFile = if (node.has("content")) {
-            CreateFile(filePath, node["content"].asText())
+            CreateFile(filePath, node["content"].asText(), fileSystemHandler, environment)
         } else {
-            CreateFile(filePath, blueprint.fileContentOf(node["source"].asText()) )
+            CreateFile(filePath, blueprint.fileContentOf(node["source"].asText()), fileSystemHandler, environment)
         }
 
         return ParseResult.Single(createFile)
