@@ -4,6 +4,7 @@ import com.github.andre2w.pedreiro.arguments.Arguments
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.ProcessExecutor
+import com.github.andre2w.pedreiro.tasks.*
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -50,11 +51,31 @@ class BlueprintServiceShould {
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
         val tasks = Tasks.from(
-            CreateFolder("project", fileSystemHandler, environment),
-            CreateFolder("project/src", fileSystemHandler, environment),
-            CreateFolder("project/src/main", fileSystemHandler, environment),
-            CreateFolder("project/src/main/kotlin", fileSystemHandler, environment),
-            CreateFolder("project/src/main/resources", fileSystemHandler, environment)
+            CreateFolder(
+                "project",
+                fileSystemHandler,
+                environment
+            ),
+            CreateFolder(
+                "project/src",
+                fileSystemHandler,
+                environment
+            ),
+            CreateFolder(
+                "project/src/main",
+                fileSystemHandler,
+                environment
+            ),
+            CreateFolder(
+                "project/src/main/kotlin",
+                fileSystemHandler,
+                environment
+            ),
+            CreateFolder(
+                "project/src/main/resources",
+                fileSystemHandler,
+                environment
+            )
         )
 
         assertThat(loadedTasks).isEqualTo(tasks)
@@ -77,8 +98,17 @@ class BlueprintServiceShould {
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
         val tasks = Tasks.from(
-            CreateFolder("project", fileSystemHandler, environment),
-            CreateFile("project/build.gradle", "dependencies list", fileSystemHandler, environment)
+            CreateFolder(
+                "project",
+                fileSystemHandler,
+                environment
+            ),
+            CreateFile(
+                "project/build.gradle",
+                "dependencies list",
+                fileSystemHandler,
+                environment
+            )
         )
 
         assertThat(loadedTasks).isEqualTo(tasks)
@@ -102,8 +132,17 @@ class BlueprintServiceShould {
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
         val tasks = Tasks.from(
-            CreateFolder("test-command", fileSystemHandler, environment),
-            ExecuteCommand("gradle init", "test-command", processExecutor, commandParser)
+            CreateFolder(
+                "test-command",
+                fileSystemHandler,
+                environment
+            ),
+            ExecuteCommand(
+                "gradle init",
+                "test-command",
+                processExecutor,
+                commandParser
+            )
         )
 
         assertThat(loadedTasks).isEqualTo(tasks)
@@ -135,7 +174,12 @@ class BlueprintServiceShould {
         val loadedTasks = blueprintService.loadBlueprint(arguments)
 
         val expectedTasks = Tasks.from(
-            CreateFile("build.gradle", "id 'kotlin'", fileSystemHandler, environment)
+            CreateFile(
+                "build.gradle",
+                "id 'kotlin'",
+                fileSystemHandler,
+                environment
+            )
         )
         assertThat(loadedTasks).isEqualTo(expectedTasks)
     }

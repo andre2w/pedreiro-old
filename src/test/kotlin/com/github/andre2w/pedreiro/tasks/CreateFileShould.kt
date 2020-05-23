@@ -1,4 +1,4 @@
-package com.github.andre2w.pedreiro.blueprints
+package com.github.andre2w.pedreiro.tasks
 
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
@@ -20,7 +20,12 @@ class CreateFileShould {
         """.trimIndent()
         every { environment.currentDir() } returns "/home/andre/project"
 
-        val createFile = CreateFile("test-project/build.gradle", content, fileSystemHandler, environment)
+        val createFile = CreateFile(
+            "test-project/build.gradle",
+            content,
+            fileSystemHandler,
+            environment
+        )
         createFile.execute()
 
         verify {

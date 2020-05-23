@@ -1,7 +1,8 @@
-package com.github.andre2w.pedreiro.blueprints
+package com.github.andre2w.pedreiro.tasks
 
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
+import com.github.andre2w.pedreiro.tasks.CreateFolder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -15,7 +16,11 @@ class CreateFolderShould {
         val environment = mockk<Environment>()
         every { environment.currentDir() } returns "/home/andre/projects"
 
-        val createFolder = CreateFolder("test-folder", fileSystemHandler, environment)
+        val createFolder = CreateFolder(
+            "test-folder",
+            fileSystemHandler,
+            environment
+        )
         createFolder.execute()
 
         verify {

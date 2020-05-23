@@ -3,6 +3,7 @@ package com.github.andre2w.pedreiro.blueprints
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.ProcessExecutor
+import com.github.andre2w.pedreiro.tasks.*
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -31,8 +32,16 @@ class ScaffoldingServiceShould {
         every { environment.currentDir() } returns baseDir
 
         val blueprint = Tasks.from(
-            CreateFolder("pedreiro", fileSystemHandler, environment),
-            CreateFolder("pedreiro/src", fileSystemHandler, environment)
+            CreateFolder(
+                "pedreiro",
+                fileSystemHandler,
+                environment
+            ),
+            CreateFolder(
+                "pedreiro/src",
+                fileSystemHandler,
+                environment
+            )
         )
         scaffoldingService.execute(blueprint)
 
@@ -46,8 +55,17 @@ class ScaffoldingServiceShould {
     fun `create file with contents in the current folder`() {
         every { environment.currentDir() } returns baseDir
         val tasks = Tasks.from(
-            CreateFolder("pedreiro", fileSystemHandler, environment),
-            CreateFile("pedreiro/build.gradle", "dependencies", fileSystemHandler, environment)
+            CreateFolder(
+                "pedreiro",
+                fileSystemHandler,
+                environment
+            ),
+            CreateFile(
+                "pedreiro/build.gradle",
+                "dependencies",
+                fileSystemHandler,
+                environment
+            )
         )
 
 
@@ -62,7 +80,14 @@ class ScaffoldingServiceShould {
     @Test
     fun `execute command in the specified folder`() {
         val command = listOf("gradle", "init")
-        val tasks = Tasks.from(ExecuteCommand("gradle init", "pedreiro", processExecutor, commandParser))
+        val tasks = Tasks.from(
+            ExecuteCommand(
+                "gradle init",
+                "pedreiro",
+                processExecutor,
+                commandParser
+            )
+        )
 
         every { environment.currentDir() } returns baseDir
         every { processExecutor.execute(command, "/home/user/projects/pedreiro") } returns 0

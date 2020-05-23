@@ -1,5 +1,6 @@
-package com.github.andre2w.pedreiro.blueprints
+package com.github.andre2w.pedreiro.tasks
 
+import com.github.andre2w.pedreiro.blueprints.CommandParser
 import com.github.andre2w.pedreiro.io.ProcessExecutor
 import io.mockk.every
 import io.mockk.mockk
@@ -15,7 +16,12 @@ class ExecuteCommandShould {
         val runFolder = "/home/andre/projects/test-project"
         val command = listOf("gradle", "wrapper")
         every { processExecutor.execute(command, runFolder) } returns 0
-        val executeCommand = ExecuteCommand("gradle wrapper", runFolder, processExecutor, commandParser)
+        val executeCommand = ExecuteCommand(
+            "gradle wrapper",
+            runFolder,
+            processExecutor,
+            commandParser
+        )
         executeCommand.execute()
 
         verify {

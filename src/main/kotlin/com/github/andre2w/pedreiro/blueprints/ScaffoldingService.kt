@@ -3,6 +3,7 @@ package com.github.andre2w.pedreiro.blueprints
 import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.ProcessExecutor
+import com.github.andre2w.pedreiro.tasks.*
 
 class ScaffoldingService(
     private val fileSystemHandler: FileSystemHandler,

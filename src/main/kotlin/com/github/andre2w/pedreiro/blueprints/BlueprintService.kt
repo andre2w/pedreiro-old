@@ -7,6 +7,7 @@ import com.github.andre2w.pedreiro.io.Environment
 import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.ProcessExecutor
 import com.github.andre2w.pedreiro.io.YAMLParser
+import com.github.andre2w.pedreiro.tasks.*
 
 sealed class ParseResult {
     data class Single(val task: Task) : ParseResult()
@@ -64,7 +65,13 @@ class BlueprintService(
 
         val currentLevel = level + node["name"].asText()
 
-        result.add(CreateFolder(currentLevel.asPath(), fileSystemHandler, environment))
+        result.add(
+            CreateFolder(
+                currentLevel.asPath(),
+                fileSystemHandler,
+                environment
+            )
+        )
 
         node["children"]?.let { children ->
             result.addAll(parseList(children, currentLevel, blueprint))
@@ -78,16 +85,33 @@ class BlueprintService(
         val filePath = if (path == "") node["name"].asText() else path + "/" + node["name"].asText()
 
         val createFile = if (node.has("content")) {
-            CreateFile(filePath, node["content"].asText(), fileSystemHandler, environment)
+            CreateFile(
+                filePath,
+                node["content"].asText(),
+                fileSystemHandler,
+                environment
+            )
         } else {
-            CreateFile(filePath, blueprint.fileContentOf(node["source"].asText()), fileSystemHandler, environment)
+            CreateFile(
+                filePath,
+                blueprint.fileContentOf(node["source"].asText()),
+                fileSystemHandler,
+                environment
+            )
         }
 
         return ParseResult.Single(createFile)
     }
 
     private fun parseCommand(path: String, node: JsonNode): ParseResult.Single {
-        return ParseResult.Single(ExecuteCommand(node["command"].asText(), path, processExecutor, commandParser))
+        return ParseResult.Single(
+            ExecuteCommand(
+                node["command"].asText(),
+                path,
+                processExecutor,
+                commandParser
+            )
+        )
     }
 
     private fun List<String>.asPath() = this.joinToString("/")
