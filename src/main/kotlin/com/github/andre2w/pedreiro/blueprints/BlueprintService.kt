@@ -8,6 +8,8 @@ import com.github.andre2w.pedreiro.io.FileSystemHandler
 import com.github.andre2w.pedreiro.io.ProcessExecutor
 import com.github.andre2w.pedreiro.io.YAMLParser
 import com.github.andre2w.pedreiro.tasks.*
+import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.parser.ParserException
 
 sealed class ParseResult {
     data class Single(val task: Task) : ParseResult()
@@ -27,13 +29,16 @@ class BlueprintService(
     fun loadBlueprint(arguments: Arguments): Tasks {
 
         val blueprint = blueprintReader.read(arguments)
+
+        val yaml = Yaml()
+
         val blueprintTasks = try {
-            objectMapper.readTree(blueprint.tasks)
-        } catch (err: JacksonYAMLParseException) {
+            yaml.load<Any>(blueprint.tasks)
+        } catch (err: ParserException) {
             throw BlueprintParsingException("Failed to parse blueprint ${arguments.blueprintName}")
         }
 
-        return Tasks.from(parse(JacksonYamlNode(blueprintTasks), blueprint))
+        return Tasks.from(parse(SnakeYamlNode(blueprintTasks), blueprint))
     }
 
     private fun parse(
@@ -163,6 +168,31 @@ class JacksonYamlNode(private val jsonNode: JsonNode) : YamlNode, Iterable<YamlN
 
     override fun iterator(): Iterator<JacksonYamlNode> {
         return jsonNode.map { JacksonYamlNode(it) }.iterator()
+    }
+}
+
+
+class SnakeYamlNode(private val node: Any) : YamlNode, Iterable<YamlNode> {
+    override fun isArray(): Boolean {
+        return node is List<*>
+    }
+
+    override fun getTextFromField(fieldName: String): String {
+        return (node as Map<String, String>)[fieldName]!!
+    }
+
+    override fun getChildren(fieldName: String): YamlNode? {
+        return (node as Map<*, *>)[fieldName]?.let { SnakeYamlNode(it) }
+    }
+
+    override fun hasField(fieldName: String): Boolean {
+        return (node as Map<*, *>).containsKey(fieldName)
+    }
+
+    override fun iterator(): Iterator<YamlNode> {
+        return (node as List<Any>)
+            .map { SnakeYamlNode(it) }
+            .iterator()
     }
 
 }
