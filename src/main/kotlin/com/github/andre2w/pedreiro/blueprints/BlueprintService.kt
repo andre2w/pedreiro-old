@@ -24,7 +24,7 @@ class BlueprintService(
 
     private val objectMapper = YAMLParser.objectMapper
 
-    fun loadBlueprint(arguments: Arguments) : Tasks {
+    fun loadBlueprint(arguments: Arguments): Tasks {
 
         val blueprint = blueprintReader.read(arguments)
         val blueprintTasks = try {
@@ -33,20 +33,25 @@ class BlueprintService(
             throw BlueprintParsingException("Failed to parse blueprint ${arguments.blueprintName}")
         }
 
-        return Tasks.from(parse(blueprintTasks, blueprint))
+        return Tasks.from(parse(JacksonYamlNode(blueprintTasks), blueprint))
     }
 
-    private fun parse(node: JsonNode, blueprint : Blueprint, level: List<String> = ArrayList()) : List<Task> {
-        if (node.isArray) {
-            return parseList(node, level, blueprint)
+    private fun parse(
+        yamlNode: YamlNode,
+        blueprint: Blueprint,
+        level: List<String> = ArrayList()
+    ): List<Task> {
+
+        if (yamlNode.isArray()) {
+            return parseList(level, blueprint, yamlNode)
         }
 
         val result = ArrayList<Task>()
-        val parsedResult =  when (node["type"].asText()) {
-            "command" -> parseCommand(level.asPath(), node)
-            "file"    -> parseCreateFile(level.asPath() , node, blueprint)
-            "folder"  -> parseCreateFolder(level, node, blueprint)
-            else -> throw BlueprintParsingException("Invalid type of ${node["type"].asText()}")
+        val parsedResult = when (yamlNode.getTextFromField("type")) {
+            "command" -> parseCommand(level.asPath(), yamlNode)
+            "file" -> parseCreateFile(level.asPath(), blueprint, yamlNode)
+            "folder" -> parseCreateFolder(level, blueprint, yamlNode)
+            else -> throw BlueprintParsingException("Invalid type of ${yamlNode.getTextFromField("type")}")
         }
 
         when (parsedResult) {
@@ -57,13 +62,22 @@ class BlueprintService(
         return result
     }
 
-    private fun parseList(nodes: JsonNode, level: List<String>, blueprint: Blueprint): List<Task> =
-        nodes.flatMap { node -> parse(node, blueprint,level) }
+    private fun parseList(
+        level: List<String>,
+        blueprint: Blueprint,
+        yamlNode: YamlNode
+    ): List<Task> {
+        return yamlNode.flatMap { node -> parse(node, blueprint, level) }
+    }
 
-    private fun parseCreateFolder(level: List<String>, node: JsonNode, blueprint: Blueprint) : ParseResult.Many {
+    private fun parseCreateFolder(
+        level: List<String>,
+        blueprint: Blueprint,
+        yamlNode: YamlNode
+    ): ParseResult.Many {
         val result = ArrayList<Task>()
 
-        val currentLevel = level + node["name"].asText()
+        val currentLevel = level + yamlNode.getTextFromField("name")
 
         result.add(
             CreateFolder(
@@ -73,40 +87,45 @@ class BlueprintService(
             )
         )
 
-        node["children"]?.let { children ->
-            result.addAll(parseList(children, currentLevel, blueprint))
+        yamlNode.getChildren("children")?.let { children ->
+            result.addAll(parseList(currentLevel, blueprint, children))
         }
 
         return ParseResult.Many(result)
     }
 
-    private fun parseCreateFile(path: String, node: JsonNode, blueprint: Blueprint): ParseResult.Single {
+    private fun parseCreateFile(
+        path: String,
+        blueprint: Blueprint,
+        yamlNode: YamlNode
+    ): ParseResult.Single {
 
-        val filePath = if (path == "") node["name"].asText() else path + "/" + node["name"].asText()
-
-        val createFile = if (node.has("content")) {
-            CreateFile(
-                filePath,
-                node["content"].asText(),
-                fileSystemHandler,
-                environment
-            )
+        val filePath = if (path == "") {
+            yamlNode.getTextFromField("name")
         } else {
-            CreateFile(
-                filePath,
-                blueprint.fileContentOf(node["source"].asText()),
-                fileSystemHandler,
-                environment
-            )
+            path + "/" + yamlNode.getTextFromField("name")
         }
+
+        val content = if (yamlNode.hasField("content")) {
+            yamlNode.getTextFromField("content")
+        } else {
+            blueprint.fileContentOf(yamlNode.getTextFromField("source"))
+        }
+
+        val createFile = CreateFile(
+            filePath,
+            content,
+            fileSystemHandler,
+            environment
+        )
 
         return ParseResult.Single(createFile)
     }
 
-    private fun parseCommand(path: String, node: JsonNode): ParseResult.Single {
+    private fun parseCommand(path: String, yamlNode: YamlNode): ParseResult.Single {
         return ParseResult.Single(
             ExecuteCommand(
-                node["command"].asText(),
+                yamlNode.getTextFromField("command"),
                 path,
                 processExecutor,
                 commandParser,
@@ -116,4 +135,34 @@ class BlueprintService(
     }
 
     private fun List<String>.asPath() = this.joinToString("/")
+}
+
+interface YamlNode : Iterable<YamlNode> {
+    fun isArray(): Boolean
+    fun getTextFromField(fieldName: String): String
+    fun getChildren(fieldName: String): YamlNode?
+    fun hasField(fieldName: String): Boolean
+}
+
+class JacksonYamlNode(private val jsonNode: JsonNode) : YamlNode, Iterable<YamlNode> {
+    override fun isArray(): Boolean {
+        return jsonNode.isArray
+    }
+
+    override fun getTextFromField(fieldName: String): String {
+        return jsonNode[fieldName].asText()
+    }
+
+    override fun getChildren(fieldName: String): YamlNode? {
+        return jsonNode[fieldName]?.let { JacksonYamlNode(it) }
+    }
+
+    override fun hasField(fieldName: String): Boolean {
+        return jsonNode.has(fieldName)
+    }
+
+    override fun iterator(): Iterator<JacksonYamlNode> {
+        return jsonNode.map { JacksonYamlNode(it) }.iterator()
+    }
+
 }

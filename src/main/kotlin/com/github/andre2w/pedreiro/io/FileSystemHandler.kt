@@ -32,5 +32,5 @@ class FileSystemHandler {
             .collect(toList())
     }
 
-    private fun String.toPath() = Paths.get(this)
+    private fun String.toPath() = Paths.get(this).normalize()
 }
